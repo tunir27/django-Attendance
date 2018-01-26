@@ -1,0 +1,14 @@
+	
+.btn-default.btn-on.active{background-color: #5BB75B;color: white;}
+.btn-default.btn-off.active{background-color: #DA4F49;color: white;}
+
+
+div.mydiv {width: 500px; margin: 0 auto}
+
+.jumbotron {
+    background-color:#5674D8 !important; 
+	}
+	
+	body {
+    background-color: lightblue;
+}
