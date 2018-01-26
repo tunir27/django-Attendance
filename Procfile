@@ -1,0 +1,1 @@
+web: gunicorn Attendance.wsgi --log-file -
