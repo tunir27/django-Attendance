@@ -5,8 +5,8 @@ from . import views
 
 urlpatterns = [
     path('att', views.view_data, name='Attendance'),
-    path('api/<str:std_id>', views.get_data, name='Student Attendance Api'),
-    path('api/save', views.save_data, name='Student Attendance Api Save'),
-    path('apid/<str:stu_id>', views.get_stddata, name='Student Details Api'),
+    path('api/<str:std_id>/', views.get_data, name='Student Attendance Api'),
+    path('api/save/', views.save_data, name='Student Attendance Api Save'),
+    path('apid/<str:stu_id>/', views.get_stddata, name='Student Details Api'),
 ]
 
