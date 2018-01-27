@@ -43,6 +43,7 @@ def save_data(request):
 @api_view(['GET'])
 def get_stddata(request,stu_id):
     try:
+        print("Comming in apid")
         http_stdid = Student_Details.objects.get(stu_id=stu_id)
     except Student_Details.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
