@@ -7,7 +7,7 @@ class StudentDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Student_Details
-        fields = ('st_id','first_name','last_name','dob','address','g_name','phone')
+        fields = ('st_id','first_name','last_name','dob','address','g_name','phone','s_class','sec')
 
 class StudentAttendanceSerializer(serializers.ModelSerializer):
     """Meta class to map serializer's fields with the model fields."""

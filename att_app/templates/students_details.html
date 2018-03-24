@@ -8,15 +8,14 @@
 						<h4 class="modal-title text-center">STUDENT DETAILS</h4>
 					</div>
 					<div class="modal-body" style="padding-left: 200px">
-						<p>Student Name: {[{s.name}]}</p>
-						<p>Student ID: {[{s.stu_id}]}</p>
-						<p>Gurdian's Name: {[{s.g_name}]}</p>
-						<p>Date Of Birth:</p>
+						<p>Student Name: {[{s.first_name}]} {[{s.last_name}]}</p>
+						<p>Student ID: {[{s.st_id}]}</p>
+						<p>Guardian's Name: {[{s.g_name}]}</p>
+						<p>Date Of Birth: {[{s.dob}]}</p>
 						<p>Address: {[{s.address}]}</p>
 						<p>Phone Number: {[{s.phone}]}</p>
-						<p>Class:</p>
-						<p>Section:</p>
-						<p>School:</p>
+						<p>Class: {[{s.s_class}]}</p>
+						<p>Section: {[{s.sec}]}</p>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
