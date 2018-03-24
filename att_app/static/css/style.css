@@ -1,0 +1,179 @@
+.jumbotron .img {
+    margin-bottom: 0px;
+    opacity: 0.4;
+    color: #fff;
+    background: #000 url("http://eskipaper.com/images/abstract-blue-background-1.jpg") top center no-repeat;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    overflow: hidden;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:1;
+}
+
+.jumbotron {
+  position:relative;
+  padding-top:50px;
+  padding-bottom:80px;
+}
+.jumbotron .container {
+  position:relative;
+  z-index:2;
+}
+
+@media screen and (max-width: 768px) {
+  .jumbotron {
+    padding-top:20px;
+    padding-bottom:20px;
+  }
+}
+
+
+
+body {
+    background: #000 url("https://marcosantadev.com/wp-content/uploads/black-abstract-wallpaper-mobile.jpg");
+	width: 100%;
+  
+	 background-size: cover;
+    overflow: hidden;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:1;
+}
+
+div.mydiv {width: 500px; margin: 0 auto}
+
+.padding1{padding-left: 250px;}
+.padding{padding-left: 50px;}
+.padding2{padding-top: 40px;}
+.oval
+{
+	
+	border-radius: 25px; !important;
+	
+}
+
+
+.btn-default.btn-on.active{
+	background-color: #5BB75B;color: white; outline: none; 
+	}
+.btn-default.btn-off.active{
+	background-color: #DA4F49;color: white; outline: none;
+	}
+
+
+
+.modal-dialog {
+  width: 50%;
+  height: 80%;
+  margin: 20;
+  padding: 20;
+}
+
+.modal-content {
+  height: auto;
+  min-height: 100%;
+  border-radius: 0;
+}
+
+/*New css*/
+
+.well{
+	background: #f2f2f2;
+	padding:20px;
+}
+.navbar-brand {
+    color: #000;
+}
+.pad-xs{
+	padding:5px
+}
+.pad-sm{
+	padding:20px
+}
+.pad-md{
+	padding:50px
+}
+.pad-lg{
+	padding:100px
+}
+.card {
+    border: none;
+	background-color: #d6ebf2;
+    transition: all .2s ease;
+}
+
+
+.box-xs{
+	box-shadow: 1px 1px 1px 0px #d9d9d9;
+}
+.box-sm{
+	box-shadow: 1px 3px 5px 0px #d9d9d9;
+}
+.box-md{
+	box-shadow: 1px 5px 7px 0px #d9d9d9;
+}
+.box-lg{
+	box-shadow: 1px 8px 15px 0px #d9d9d9;
+}
+
+
+.card:hover {
+    box-shadow: 1px 2px 1px 0px #d9d9d9;
+}
+.card-body i{
+	font-size: 3em;
+}
+.bg-light {
+    background-color: #fcfcfc!important;
+}
+/*  colors */
+.red{
+	color:#ff0000 !important;
+}
+.green{
+	color: green !important;
+}
+.brown{
+	color: brown !important;
+}
+
+footer{
+	margin-top:100px
+}
+.closebtn{
+	text-decoration:none !important;
+	right:10px;
+	position: absolute;
+	transition : all .3s ease;
+	font-size:1.2em;
+}
+.closebtn:hover{
+	font-size:1.4em;
+}
+.bg-red{
+	background:red;
+}
+.circle{
+	background:red;
+	width: 200px;
+	height:200px;
+	border-radius: 50%;
+	padding:90px 0px 100px 0px; 
+	color:#fff;
+	font-weight:bold;
+}
+
+.card-pad{
+	padding-left:50px;
+	padding-top:20px;
+}
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="NewCollegeProject" xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+    <meta charset="utf-8" />
+    <meta name="abhro" content="Project Angular JS" />
+       <title>Attendance Project</title>
+    <meta name="description" content="Attendance Project">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <!-- add styles -->
+	{% load static %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/animate.min.css' %}" rel="stylesheet">
+ </head>
+<body>
+
+<div class="jumbotron text-center">
+	<div class="img"></div>
+	<h1>Class Attendance</h1>
+</div>
+
+<section id="FULL CONTAINER">
+	<div class="container">
+		<section id="dashboard_card">
+			<div class="row pad-md">
+				<div class="col-md-4">
+					<div class="card box-md animated zoomIn">
+						<div class="card-body row">
+							<div class='col-sm-3 card-pad clearfix'>
+								<i class='fa fa-male red'></i>
+							</div>
+							<div class='col-sm-9'>
+								<h2 class='red'>Total Students</h2>
+								<h5>{{ stu_count }}</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card box-md animated zoomIn">
+						<div class="card-body row">
+							<div class='col-sm-3 card-pad clearfix'>
+								<i class='fa fa-check green'></i>
+							</div>
+							<div class='col-sm-9'>
+								<h2 class='green'>Present</h2>
+								<h5>50</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card box-md animated zoomIn">
+						<div class="card-body row">
+							<div class='col-sm-3 card-pad clearfix'>
+								<i class='fa fa-ban brown'></i>
+							</div>
+							<div class='col-sm-9'>
+								<h2 class='brown'>Absent</h2>
+								<h5>50</h5>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		
+		<div class="col-md-3 padding">
+			<div>
+				<h3>IN TIME</h3>
+				<p id="datetimein"></p>
+				<script>
+		var d = new Date();
+        document.getElementById("datetimein").innerHTML = d.toUTCString();
+        </script>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<div>
+				<h3>OUT TIME</h3>
+				<p id="datetimeout"></p>
+				<script>
+		var d = new Date();
+        document.getElementById("datetimeout").innerHTML = d.toUTCString();
+        </script>
+			</div>
+		</div>
+		<div class="col-md-3 padding2">
+			<div>
+				<div class="btn-group" id="status" data-toggle="buttons">
+					<label class="btn btn-default btn-on active oval"> <input
+						type="radio" value="1"
+						name="multifeatured_module[module_id][status]" checked="checked">PRESENT
+					</label> <label class="btn btn-default btn-off oval"> <input
+						type="radio" value="0"
+						name="multifeatured_module[module_id][status]">ABSENT
+					</label>
+				</div>
+			</div>
+		</div>
+ <div ui-view="student_details" autoscroll="false"></div>
+</div>
+</section>
+<footer class="text-center">
+<hr>
+Copyright &copy;
+</footer>
+  
+<!--   <script src="js/bootstrap.min.js"></script> -->
+  <script src="{% static 'js/angular.min.js' %}"></script>
+    <script src="{% static 'js/angular-ui-router.min.js' %}"></script>
+    <script src="{% static 'app/app.js' %}"></script>
+	<script src="{% static 'app/ctrl_model.js' %}"></script>
+   
+</body>
+</html>

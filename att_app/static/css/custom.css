@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Poiret+One');
+
+body, html {
+	height: 100%;
+	width: 100%;
+	font-family: 'Raleway',sans-serif;
+	background-repeat: no-repeat;
+	background:black;
+	position: relative;
+}
+
+.in-page {
+    min-height: 520px;
+}
+
+.main {
+    float:left;
+  width:60%;
+  padding:0 20px;
+}
+
+a {
+    color: #1b5a7c;
+}
+
+a:hover, a:focus {
+    color: #1b5a7c;
+}
+
+.btn-cyan {
+    background-color: #1b5a7c;
+    color: #fff;
+}
+
+.btn-cyan:hover {
+    color: #fff;
+    opacity: 0.9;
+}
+
+.form-control:focus {
+    border-color: #1b5a7c;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(24, 204, 162, 0.6);
+    outline: 0 none;
+}
+
+.min-height {
+    min-height: 380px;
+}
+
+.login-screen {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+.login-screen:before {
+    content: "";
+    background: rgba(0,0,0, 0.5);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.login-center {
+    text-align: left;
+}
+
+.login {
+    width: 320px;
+    color: #fff;
+}
+
+.login .login-form {
+    text-align: left;
+}
+
+.login label {
+    color: #fff;
+}
+
+.login-form .input-group .form-control {
+    background: none;
+    height: 44px;
+    color: #ddd;
+}
+
+.login-form .input-group .input-group-addon {
+    background: none;
+}
+
+.login-form .input-group .input-group-addon .glyphicon {
+    color: #1b5a7c;
+}
+
+.login-form .input-group .form-control::-moz-placeholder {
+    color: #fff;
+    opacity: 0.3;
+}
+
+.login .sign-btn input.btn {
+    background: #1b5a7c;
+    border-color: #1b5a7c;
+    color: #fff;
+    width: 180px;
+}
+
+.login .sign-btn a {
+    text-decoration: none;
+}
+
+.login .checkbox {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.login .forgot {
+    display: inline-block;
+    margin: 20px 0;
+}
+
+#particles-js{
+  	width: 100%;
+  	height: 100%;
+  	background-size: cover;
+  	background-position: 100% 100%;
+  	position: fixed;
+  	top: 0px;
+  	z-index:1;
+}

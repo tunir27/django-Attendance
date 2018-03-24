@@ -1,0 +1,40 @@
+
+
+<div class="col-md-3 padding">
+			<div>
+				<h3>STUDENT NAME</h3>
+				<ul class="custom-bullet">
+					<a ng-click="fetch_details('S001')">
+						<li><h4>Abhro Bhattacharjee</h4></li>
+					</a>
+				</ul>
+			</div>
+		</div>
+		<div class="modal fade" id="myModal" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title text-center">STUDENT DETAILS</h4>
+					</div>
+					<div class="modal-body" style="padding-left: 200px">
+						<p>Student Name: {[{s.name}]}</p>
+						<p>Student ID: {[{s.stu_id}]}</p>
+						<p>Gurdian's Name: {[{s.g_name}]}</p>
+						<p>Date Of Birth:</p>
+						<p>Address: {[{s.address}]}</p>
+						<p>Phone Number: {[{s.phone}]}</p>
+						<p>Class:</p>
+						<p>Section:</p>
+						<p>School:</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	
+
+
