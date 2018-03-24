@@ -118,7 +118,7 @@ class ApiDetails(APIView):
             http_stdid = Student_Details.objects.filter(st_id=std_id)
         except Student_Details.DoesNotExist:
             return Response("Student ID error",status=status.HTTP_404_NOT_FOUND)
-        serializer = StudentDetailsSerializer(http_stdid)
+        serializer = StudentDetailsSerializer(http_stdid,many=True)
         return Response(serializer.data)
     def post(self, request, format=None):
         pstd_id = request.POST.get('st_id')

@@ -1,5 +1,5 @@
 app.controller("ctrl_model",function($scope,$http){
-	url='https://attendanceproject.herokuapp.com/stud/apid/';
+	url='https://attendanceproject.herokuapp.com/dashboard/apid/';
 	type="/?format=json";
 	//console.log("hello");
 	
