@@ -32,7 +32,7 @@ def successful_login(request):
 ##        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
 ##        for data in f:
 ##            ntime=strftime("%d/%m/%y", gmtime())
-##            r=requests.post('http://127.0.0.1:8000/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+##            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
     #http_date=''
     print(request.POST)
 
@@ -53,7 +53,7 @@ def successful_login(request):
     print(http_status)
     print(http_vdate)
     if http_sid and http_status and http_vdate:
-        r=requests.post('http://127.0.0.1:8000/dashboard/apia/',data={'st_id':http_sid,'date':http_vdate,'status':http_status})
+        r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':http_sid,'date':http_vdate,'status':http_status})
         print(r.content)
 
 
