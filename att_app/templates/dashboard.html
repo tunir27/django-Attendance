@@ -145,14 +145,14 @@
 				{% if i.status == "1" %}
 				{% if staff_value == True %}
 				<div class="col-md-3" style="padding-top:27px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P');" >PRESENT</button>
+					<button class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A');" >ABSENT</button>
 					</div>
 					
 				{% else %}
 				<div class="col-md-3" style="padding-top:27px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button" name="status" value="1">PRESENT</button>
-					<button class="btn btn-default oval" type="submit" id="button"  name="status" value="0" >ABSENT</button>
+					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="button" id="button" name="status" value="1">PRESENT</button>
+					<button class="btn btn-default oval" type="button" id="button"  name="status" value="0" >ABSENT</button>
 					</div>
 					
 					{% endif %}
@@ -160,8 +160,8 @@
 				
 				{% if staff_value == True %}
 				<div class="col-md-3" style="padding-top:27px">
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}" name="status" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="status" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+					<button class="btn btn-default oval" type="submit" id="button{{counter}}" name="status" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P');" >PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="status" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A);" >ABSENT</button>
 					</div>
 					
 				{% else %}
@@ -234,7 +234,7 @@ function submitForm1(val){
 				
 		
 <script>
-    function setColor(btn, s, val) 
+    function setColor(btn, s) 
 	{
 	console.log(btn);
 		if (s == 'P')
