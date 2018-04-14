@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Contact email from: {{name}}{% endblocktrans %}
+
+{% blocktrans %}Contact message: {{content}}{% endblocktrans %}
+
+{% trans "User ID associated with the message:" %} {{ user.sid }}
+{% trans "Email associated with the User:" %} {{ u_mail }}
+
+{% trans "Reply to the above email id" %}
+
+{% endautoescape %}

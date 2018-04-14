@@ -19,7 +19,7 @@ def login_user(request):
         if user is not None:
             login(request, user)
             request.session['username'] = std_id
-            return redirect('/dashboard/att/')
+            return redirect('/home/att')
         else:
             messages.error(request, 'Invalid login credentials')
     return render(request,'index.html', {

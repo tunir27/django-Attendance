@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block body %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% if staff_value == False %}
+<div class="container">
+	<div class="col-md-7" style="padding-left:400px; padding-top:100px">
+		<form name="StuHistory" method="POST" action="/home/pdf/">
+		{% csrf_token %}
+    		<div class="form-group">
+    			<label style="color:white">Select Date</label>
+    		    <input type="text" id="datepicker" name="date" class="form-control" placeholder="Choose" required>
+    		</div>
+	</div>
+	<div class="col-md-4" style="padding-top:125px">
+	<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+</form>
+{% endif %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+$(function() {
+        $( "#datepicker" ).datepicker({
+            dateFormat : 'dd/mm/y',
+            changeMonth : true,
+            changeYear : true,
+            yearRange: '-100y:c+nn',
+            maxDate: '-1d'
+        });
+    }); 
+</script>
+{% if staff_value == True %}
+<div class="col-md-7" style="padding-left:450px;padding-top:200px">
+<div>
+	<label style="color:white"for="chkStudent">
+    <input type="checkbox" id="chkStudent" data-related-item="ch" />Select Single Student</label>
+	</div>
+	<div id="dvStudent" style="display: none">
+    <label id="ch" style="color:white">Enter Student ID:</label>
+	<form name="TeachHistoryS" method="POST" action="/home/pdf/">
+		{% csrf_token %}
+    <input type="text" id="studentid" name="stu_id" required>
+	<div style="padding-right:250px">
+    		<div class="form-group">
+    			<label style="color:white">Select Date</label>
+    		    <input type="text" id="datepicker1" name="date" class="form-control" placeholder="Choose" required>
+    		</div>
+		</div>
+		<div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+	</form>
+</div>
+</div>
+<script>
+$(function() {
+        $( "#datepicker1" ).datepicker({
+            dateFormat : 'dd/mm/y',
+            changeMonth : true,
+            changeYear : true,
+            yearRange: '-100y:c+nn',
+            maxDate: '-1d'
+        });
+    }); 
+</script>
+
+<!-- <script type="text/javascript">
+    $(function () {
+        $("#chkStudent").click(function () {
+            if ($(this).is(":checked")) {
+                $("#dvStudent").show();
+            } else {
+                $("#dvStudent").hide();
+            }
+        });
+    }); 
+</script> -->
+<div class="col-md-4" style="padding-top:200px">
+<div>
+	<label style="color:white"for="chkClass">
+    <input type="checkbox" id="chkClass" data-related-item="ch1"/>Select Class Wise</label>
+	</div>
+	<div id="dvClass" style="display: none">
+	
+	<form id="ch1" style="padding-right:500px" name="TeachHistoryC" method="POST" action="/home/pdf/">
+	{% csrf_token %}
+	<div class="container">
+    <div class="col-md-4" style="width:200px">
+	<select class="form-control" name="class_id" required>
+	<option value="" SELECTED>Choose Class
+	{% for entry in class_item %}
+    <option value="{{ entry.s_class }}">{{ entry.s_class }}</option>
+	{% endfor %}
+	</select>
+	</div>
+	<div class="col-md-4" style="width:200px">
+	<select class="form-control" name="sec_id" required>
+	<option value="" SELECTED>Choose Section
+	{% for entry in section_item %}
+    <option value="{{ entry.sec }}">{{ entry.sec }}</option>
+	{% endfor %}
+	</select>
+	</div>
+	</div>
+	
+	<div class="container">
+		<div class="form-group col-md-4" style="width:200px">
+			<label style="color:white">Select Date</label>
+			<input type="text" id="datepicker2" name="date" class="form-control" placeholder="Choose" required>
+		</div>
+		
+	<div class="col-md-4" style="padding-top:25px">
+	<button type="submit" class="btn btn-primary">Submit</button>
+	</div>
+	</div>
+	
+		</div>
+		</form>
+	</div>
+	</div>
+	
+{% endif %}
+<!-- <script type="text/javascript">
+    $(function () {
+        $("#chkClass").click(function () {
+            if ($(this).is(":checked")) {
+                $("#dvClass").show();
+            } else {
+                $("#dvClass").hide();
+            }
+        });
+    }); 
+</script> -->
+<script>
+$(function() {
+        $( "#datepicker2" ).datepicker({
+            dateFormat : 'dd/mm/y',
+            changeMonth : true,
+            changeYear : true,
+            yearRange: '-100y:c+nn',
+            maxDate: '-1d'
+        });
+    }); 
+</script>
+
+<script>
+function evaluate(){
+    var item = $(this);
+    var relatedItem = $("#" + item.attr("data-related-item")).parent();
+   
+    if(item.is(":checked")){
+$('input[type="checkbox"]').not($(this)).prop('checked',false).trigger('change');
+        relatedItem.fadeIn();
+    }else{
+        relatedItem.fadeOut();   
+    }
+}
+
+$('input[type="checkbox"]').change(evaluate);
+</script>
+
+<footer class="text-center" style="color:white; padding-top:500px">
+<hr>
+Copyright &copy;
+</footer>
+{% endblock %}

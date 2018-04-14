@@ -20,9 +20,28 @@ from Project.settings import STATIC_ROOT
 from .models import Student_Attendance,Student_Details
 from django.contrib.auth import get_user_model
 
+from random import choice
+from reportlab.lib.colors import HexColor
+from time import gmtime, strftime
+from datetime import date
+
+def get_random_colors(no_colors):
+    # generate random hexa
+    colors_list = []
+    for i in range(no_colors):
+        color = ''.join([choice('0123456789ABCDEF') for x in range(6)])
+        colors_list.append(HexColor('#'+color))
+    return colors_list
+
+legendcolors = get_random_colors(10)
+
+
 pdfmetrics.registerFont(TTFont('FreeSans', STATIC_ROOT + 'fonts/FreeSans.ttf'))
 pdfmetrics.registerFont(
 TTFont('FreeSansBold', STATIC_ROOT + 'fonts/FreeSansBold.ttf'))
+
+
+from calendar import monthrange
 
 class PdfPrint:
 
@@ -36,11 +55,81 @@ class PdfPrint:
             self.pageSize = letter
         self.width, self.height = self.pageSize
 
+    def title_draw(self, x, y, text):
+        chart_title = Label()
+        chart_title.x = x
+        chart_title.y = y
+        chart_title.fontName = 'FreeSansBold'
+        chart_title.fontSize = 16
+        chart_title.textAnchor = 'middle'
+        chart_title.setText(text)
+        return chart_title
+
     def pageNumber(self, canvas, doc):
         number = canvas.getPageNumber()
         canvas.drawCentredString(100*mm, 15*mm, str(number))
 
-    def report(self, attendance_history,details, title):
+    def legend_draw(self, labels, chart, **kwargs):
+        legend = Legend()
+        chart_type = kwargs['type']
+        legend.fontName = 'FreeSans'
+        legend.fontSize = 13
+        legend.strokeColor = None
+        if 'x' in kwargs:
+            legend.x = kwargs['x']
+        if 'y' in kwargs:
+            legend.y = kwargs['y']
+        legend.alignment = 'right'
+        if 'boxAnchor' in kwargs:
+            legend.boxAnchor = kwargs['boxAnchor']
+        if 'columnMaximum' in kwargs:
+            legend.columnMaximum = kwargs['columnMaximum']
+        # x-distance between neighbouring swatche\s
+        legend.deltax = 0
+        lcolors = legendcolors
+        if chart_type == 'pie':
+            lcolors = [colors.green, colors.red]
+        legend.colorNamePairs = list(zip(lcolors, labels))
+
+        for i, color in enumerate(lcolors):
+##            if chart_type == 'line':
+##                chart.lines[i].fillColor = color
+            if chart_type == 'pie':
+                chart.slices[i].fillColor = color
+##            elif chart_type == 'bar':
+##                chart.bars[i].fillColor = color
+        return legend
+        
+
+
+    def pie_chart_draw(self, values, llabels):
+        d = Drawing(10, 150)
+        # chart
+        pc = Pie()
+        pc.x = 0
+        pc.y = 50
+        # set data
+        pc.data = values
+        # set labels
+        percentage = []
+        for value in values:
+            v = round(value, 2)
+            percentage.append(str(v)+" %")
+        pc.labels = percentage
+        # set the link line between slice and it's label
+        pc.sideLabels = 1
+        # set width and color for slices
+        pc.slices.strokeWidth = 0
+        pc.slices.strokeColor = None
+        d.add(self.title_draw(250, 180,
+                              'Student Attendance Percentage'))
+        d.add(pc)
+        d.add(self.legend_draw(llabels, pc, x=300, y=150, boxAnchor='ne',
+                               columnMaximum=12, type='pie'))
+        return d
+        
+
+    def report(self, attendance_history,details,date,pie, title):
         # set some characteristics for pdf document
         doc = SimpleDocTemplate(
             self.buffer,
@@ -100,6 +189,17 @@ class PdfPrint:
              ('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
         data.append(ah_table)
         data.append(Spacer(1, 48))
+        # add pie chart
+        if pie:
+            d,m,y=date.split("/")
+            s_date,t_days=monthrange(int(y),int(m))
+            today = strftime("%d/%m/%y", gmtime())
+            present_per=(attendance_history.filter(out_time__isnull=False).exclude(date=today).count()/t_days)*100
+            absent_per=100-present_per
+            att_percentage=[present_per,absent_per]
+            llabels = ['Present','Absent']
+            pie_chart = self.pie_chart_draw(att_percentage, llabels)
+            data.append(pie_chart)
         # create document
         doc.build(data, onFirstPage=self.pageNumber,
                   onLaterPages=self.pageNumber)

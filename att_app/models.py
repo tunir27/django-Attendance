@@ -12,6 +12,7 @@ class Student_Details(models.Model):
     phone=models.CharField(max_length=15, help_text="Enter Guardian Number",verbose_name="Guardian Phone",null=True)
     s_class=models.CharField(max_length=1, help_text="Enter Student Class",verbose_name="Student Class",null=True)
     sec=models.CharField(max_length=1, help_text="Enter Student Section",verbose_name="Student Section",null=True)
+    email = models.EmailField(max_length=70,help_text="Enter Email",verbose_name="Email",blank=True,null=True,unique=True)
     def __str__(self):
         return str(self.st_id)
 class Teacher_Details(models.Model):

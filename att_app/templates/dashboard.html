@@ -1,36 +1,11 @@
-<!DOCTYPE html>
-<html lang="en" ng-app="NewCollegeProject" xmlns="http://www.w3.org/1999/xhtml">
- <head>
-    <meta charset="utf-8" />
-    <meta name="abhro" content="Project Angular JS" />
-       <title>Attendance Project</title>
-    <meta name="description" content="Attendance Project">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'base.html' %}
+{% block body %}
 
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    
-    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
-    <!-- add styles -->
-	{% load filters %}
-	{% load static %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
-	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/animate.min.css' %}" rel="stylesheet">
-	
-	
- </head>
-<body>
 	<h1 style="text-align: center; color:white">Class Attendance</h1>
-	<h3 style="text-align: right; color:white"><a href="{% url 'logout_user' %}">Logout</a></h3>
-	<form method="POST">
-	{% csrf_token %}
-	<button class="btn btn-default pull-right" name="pdf" type="submit">PDF</button>
-	</form>
-<section id="FULL CONTAINER" ng-controller="ctrl_model">
+	
+	{% load filters %}
+	
+	<section id="FULL CONTAINER" ng-controller="ctrl_model">
 	<div class="container" style="padding-top:80px">
 		<section id="dashboard_card">
 			<div class="row pad-md">
@@ -77,7 +52,7 @@
 		</section>
 		
 
-    <form style="padding-left:250px" name="DateForm" method="POST">
+    <form style="padding-left:250px" name="DateForm" method="POST" action="">
 	{% csrf_token %}
     <div class="col-md-4" style="width:200px">
 	<select class="form-control" name="date_id">
@@ -109,11 +84,11 @@
 				
 		<div class="col-md-3" style="padding-left:150px">
 			<div>
-				<h3 style="color:white">STUDENT NAME</h3>
+				<h3 style="color:white"><u>STUDENT NAME</u></h3>
 				<ul class="custom-bullet">
 				{% for j in stu_det %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
-						<li><h4>{{j.first_name}} {{j.last_name}}</h4></li>
+						<li><h4 style="padding-top:5px">{{j.first_name}} {{j.last_name}}</h4></li>
 					</a>
 					{% endfor %}
 				</ul>
@@ -121,20 +96,20 @@
 		</div>
 		<div class="col-md-3" style="padding-left:150px" >
 			<div>
-				<h3 style="color:white">IN TIME</h3>
+				<h3 style="color:white"><u>IN TIME</u></h3>
 				<p id="datetimein"></p>
 		{% for i in stu_att %}
-				<p style="color:white">{{i.in_time}} {{i.date}}</p>
+				<p style="color:white; padding-top:5px">{{i.in_time}} {{i.date}}</p>
 				{% endfor %}
 			</div>
 			
 		</div>
 		<div class="col-md-3" style="padding-left:100px">
 			<div>
-				<h3 style="color:white">OUT TIME</h3>
+				<h3 style="color:white"><u>OUT TIME</u></h3>
 				<p id="datetimeout"></p>
 				{% for i in stu_att %}
-				<p style="color:white">{{i.out_time}}</p>
+				<p style="color:white; padding-top:5px">{{i.out_time}}</p>
 				{% endfor %}
 			</div>	
 		</div>
@@ -144,37 +119,37 @@
 			{% for i in stu_att %}
 				{% if i.status == "1" %}
 				{% if staff_value == True %}
-				<div class="col-md-3" style="padding-top:27px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P');" >PRESENT</button>
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A');" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:47px">
+					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value);" >PRESENT</button>
+					<button class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value);" >ABSENT</button>
 					</div>
 					
 				{% else %}
-				<div class="col-md-3" style="padding-top:27px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="button" id="button" name="status" value="1">PRESENT</button>
-					<button class="btn btn-default oval" type="button" id="button"  name="status" value="0" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:47px">
+					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button" name="status" value="1" disabled>PRESENT</button>
+					<button class="btn btn-default oval" type="submit" id="button"  name="status" value="0" disabled>ABSENT</button>
 					</div>
 					
 					{% endif %}
 				{% else %}
 				
 				{% if staff_value == True %}
-				<div class="col-md-3" style="padding-top:27px">
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}" name="status" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P');" >PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="status" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A);" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:2px">
+					<button class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value);" >PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value);" >ABSENT</button>
 					</div>
 					
 				{% else %}
-				<div class="col-md-3" style="padding-top:27px">
-					<button class="btn btn-default oval" type="button" id="button" name="status" value="1" >PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="button" id="button"  name="status" value="0" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:47px">
+					<button class="btn btn-default oval" type="button" id="button" name="status" value="1" disabled>PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="button" id="button"  name="status" value="0" disabled>ABSENT</button>
 					</div>
 					
 				{% endif %}
 				{% endif %} 
 				{% endfor %}
 				</form>
-				
+
 <!-- <script>
 $(function () {
     $.ajaxSetup({
@@ -234,7 +209,7 @@ function submitForm1(val){
 				
 		
 <script>
-    function setColor(btn, s) 
+    function setColor(btn, s, val) 
 	{
 	console.log(btn);
 		if (s == 'P')
@@ -298,23 +273,6 @@ function submitForm1(val){
         }*/
     }
 </script>
-
-
-		
-
- <ui-view></ui-view>
-<footer class="text-center" style="color:white; padding-top:100px">
-<hr>
-Copyright &copy;
-</footer>
-  
-<!--   <script src="js/bootstrap.min.js"></script> -->
-  <script src="{% static 'js/angular.min.js' %}"></script>
-    <script src="{% static 'js/angular-ui-router.min.js' %}"></script>
-    <script src="{% static 'app/app.js' %}"></script>
-	<script src="{% static 'app/ctrl_model.js' %}"></script>
-	<script src="{% static 'js/change.js' %}"></script>
-	<script src="{% static 'js/post.js' %}"></script>
-   
-</body>
-</html>
+<ui-view></ui-view>
+    </section>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="NewCollegeProject">
+ <head>
+    <meta charset="utf-8" />
+    <meta name="abhro" content="Project Angular JS" />
+       <title>Attendance Project</title>
+    <meta name="description" content="Attendance Project">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <!-- add styles -->
+	{% load static %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/animate.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/navbar.css' %}" rel="stylesheet">
+	
+	
+ </head>
+ <body>
+    <nav class="navbar navbar-inverse navbar-expand-lg">
+      <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-3">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand"  href="{% url 'Dashboard' %}">ATTENDR</a>
+        </div>
+    
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="navbar-collapse-3">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{% url 'Dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'History' %}">History</a></li>
+			<li><a href="{% url 'Contact' %}">Contact</a></li>
+			<li><a href="{% url 'logout_user' %}">Logout</a></li>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container -->
+    </nav><!-- /.navbar -->
+
+ {% block body %}
+ {% endblock %}
+  </body>
+ 
+ <footer class="text-center" style="color:white; padding-top:100px">
+<hr>
+Copyright &copy;
+</footer>
+  
+<!--   <script src="js/bootstrap.min.js"></script> -->
+  <script src="{% static 'js/angular.min.js' %}"></script>
+    <script src="{% static 'js/angular-ui-router.min.js' %}"></script>
+    <script src="{% static 'app/app.js' %}"></script>
+	<script src="{% static 'app/ctrl_model.js' %}"></script>
+	<script src="{% static 'app/ctrl_dashboard.js' %}"></script>
+	<script src="{% static 'app/ctrl_history.js' %}"></script>
+	<script src="{% static 'js/change.js' %}"></script>
+	<script src="{% static 'js/post.js' %}"></script>
+ </html>

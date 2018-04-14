@@ -51,50 +51,24 @@
                               </div>
 							  {{state}}
 							  {% for message in messages %} {{ message }} {% endfor %}
-                              <div class="checkbox">
-                              <label><input type="checkbox">Remember me next time.</label>
-                              </div>
+         
                               
                               <div class="form-group sign-btn">
                                   <input type="submit" class="btn" value="Log in">
-                                  <p><a href="#" class="forgot">Can't access your account?</a></p>
-                                  <p><strong>New to TimeInfo?</strong><br><a href="#" id="flip-btn" class="signup signup_link">Sign up for a new account</a></p>
+                                  <p><strong>New to Attendr?</strong><br><a href="#" id="flip-btn" class="signup signup_link">Sign up for a new account</a></p>
                               </div>
                           </form>
                         </div>
-                        <div class="back signup_form" style="opacity: 0;"> 
-                          <p>Sign Up for Your New Account</p>
-                          <form class="login-form" method="POST" action="/login">
-						  {% csrf_token %}
-                              <div class="form-group">
-                                  <div class="input-group">
-                                      <input type="text" class="form-control" placeholder="Student ID">
-                                      <span class="input-group-addon">
-                                          <i class="glyphicon glyphicon-user"></i>
-                                      </span>
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                <div class="input-group">
-                                  <input type="text" class="form-control">
-                                  <span class="input-group-btn"><button type="button" class="btn btn-cyan"><span class="fa fa-refresh"></span></button></span>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                  <div class="input-group">
-                                      <input type="password" class="form-control" placeholder="Confirm Password">
-                                      <span class="input-group-addon">
-                                          <i class="glyphicon glyphicon-lock"></i>
-                                      </span>
-                                  </div>
-                              </div> 
-                              <div class="form-group sign-btn">
-                                  <input type="submit" class="btn" value="Sign up">
-                                  <br><br>
-                                  <p>You have already Account So <a href="#" id="unflip-btn" class="signup">Log in</a></p>
-                              </div>
-                          </form>
+                        <div class="back signup_form" style="opacity: 0;padding-top:100px;padding-left:20px">
+						<p>Password Reset</p>
+                          <div class="form-group sign-btn">
+							<form action="http://127.0.0.1:8000/reset_password/">
+                              <input type="submit" class="btn" value="Sign up"/>
+                              <br><br>
+							<p>You already have an account? <a href="#" id="unflip-btn" class="signup">Log in</a></p>
+						</form>
                         </div>
+						</div>
                     </div>
                 </div>
             </div>
