@@ -1,0 +1,2 @@
+att_app/static/* linguist-vendored
+jquery.js linguist-vendored=false
