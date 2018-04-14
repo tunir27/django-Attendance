@@ -1,5 +1,5 @@
 app.controller("ctrl_model",function($scope,$http){
-	url='http://127.0.0.1:8000/home/apid/';
+	url='https://attendanceproject.herokuapp.com/home/apid/';
 	type="/?format=json";
 	//console.log("hello");
 	
