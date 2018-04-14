@@ -64,7 +64,7 @@ def successful_login(request):
     print(http_status)
     print(http_vdate)
     if http_sid and http_status and http_vdate:
-        r = requests.post('http://127.0.0.1:8000/home/apia/',
+        r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',
                           data={'st_id': http_sid, 'date': http_vdate, 'status': http_status})
         print(r.content)
 
