@@ -4,7 +4,7 @@ from .models import Student_Details,Token,Student_Attendance,Teacher_Details
 
 class StudentDetailsSerializer(serializers.ModelSerializer):
     """Serializer to map the Model instance into JSON format."""
-
+    
     class Meta:
         """Meta class to map serializer's fields with the model fields."""
         model = Student_Details
@@ -23,8 +23,13 @@ class StudentAttendanceSerializer(serializers.ModelSerializer):
     """Meta class to map serializer's fields with the model fields."""
     class Meta:
         model = Student_Attendance
+        name = serializers.SerializerMethodField()
         fields=('st_id','date','in_time','out_time','duration','status')
-
+    def get_name(self, obj):
+            print(self.context['request'].user)
+            user=get_user_model()
+            det=Student_Details.objects.filter(sid=obj.uid)
+            return (det.first_name,det.last_name)
 
 
 class TokenSerializer(serializers.ModelSerializer):

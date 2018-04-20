@@ -18,7 +18,7 @@ from django.utils.html import escape
 from datetime import date
 from io import BytesIO
 from .pdf_utils import PdfPrint
-
+from django.db.models import Q
 import itertools
 import functools
 
@@ -30,21 +30,26 @@ from django.template import loader
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from Project.settings import DEFAULT_FROM_EMAIL
+from Project.settings import DEFAULT_FROM_EMAIL,FCM_SERVER_API
 from django.views.generic import *
 from .forms import PasswordResetRequestForm,SetPasswordForm,ContactUsForm
 
 
 
+from pyfcm import FCMNotification
+
+
 @login_required(login_url='/login/')
 def successful_login(request):
-    ntime = strftime("%H", gmtime())
-    ##    if int(ntime) > 8:
-    ##        d=Student_Attendance.objects.all()
-    ##        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
-    ##        for data in f:
-    ##            ntime=strftime("%d/%m/%y", gmtime())
-    ##            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+##    ntime = strftime("%H", gmtime())
+##    ndate=strftime("%d/%m/%y", gmtime())
+##    if int(ntime) > 8:
+##        d=Student_Attendance.objects.filter(date=ndate)
+##        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
+##        for data in f:
+##            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+##            #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+##            print(r.content)
     # http_date=''
     print(request.POST)
 
@@ -65,7 +70,7 @@ def successful_login(request):
     print(http_vdate)
     if http_sid and http_status and http_vdate:
         r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',
-                          data={'st_id': http_sid, 'date': http_vdate, 'status': http_status})
+                          data={'st_id': http_sid, 'date': http_vdate, 'status': http_status,'notif_s':"2"})
         print(r.content)
 
     form = FilterAttendance(request.POST or None)
@@ -74,7 +79,6 @@ def successful_login(request):
     uid = user.objects.get(sid=http_uid)
     staff_value = uid.is_staff
     request.session['staff_value']=staff_value
-    print(staff_value)
     http_date = request.POST.get('date_id')
     http_class = request.POST.get('class_id')
     http_sec = request.POST.get('sec_id')
@@ -113,6 +117,7 @@ def successful_login(request):
 
 
 def site_history(request):
+
     class_item = Student_Details.objects.values('s_class').distinct()
     section_item = Student_Details.objects.values('sec').distinct()
     staff_value=request.session['staff_value']
@@ -372,29 +377,36 @@ class ApiDetails(APIView):
         else:
             return JsonResponse({"msg":"Student/Teacher not found"}, status=status.HTTP_404_NOT_FOUND)
 
+
 class ApiTeachAttendance(APIView):
     def post(self, request,format=None):
         h_class=request.POST.get('h_class')
         h_sec=request.POST.get('h_sec')
         h_date=request.POST.get('h_date')
-        try:
+        if not h_date:
             stu_det = Student_Details.objects.filter(s_class=h_class, sec=h_sec)
-            stu_att = Student_Attendance.objects.filter(date=h_date, st_id__in=stu_det.values_list('st_id', flat=True))
-        except Student_Attendance.DoesNotExist:
-            return JsonResponse({"msg":"Value error"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = StudentAttendanceSerializer(stu_att, many=True)
-        return JsonResponse({"data":serializer.data})
-
-
+            date = Student_Attendance.objects.filter(st_id__in=stu_det.values_list('st_id', flat=True)).values('date').distinct()
+            return JsonResponse({"date":list(date)})
+        else:
+            try:
+                stu_det = Student_Details.objects.filter(s_class=h_class, sec=h_sec)
+                stu_att = Student_Attendance.objects.filter(date=h_date, st_id__in=stu_det.values_list('st_id', flat=True))
+            except Student_Attendance.DoesNotExist:
+                return JsonResponse({"msg":"Value error"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = StudentAttendanceSerializer(stu_att, many=True)
+            serializer_name=StudentDetailsSerializer(stu_det, many=True)
+            return JsonResponse({"data":serializer.data,"name":serializer_name.data})
 
 
 
 
 
 class ApiAttendance(APIView):
-    def get(self, request, std_id, format=None):
+    def get(self, request, std_id,format=None):
+        http_date=request.GET.get('date')
+        print(http_date)
         try:
-            http_stdid = Student_Attendance.objects.filter(st_id=std_id)
+            http_stdid = Student_Attendance.objects.filter(st_id=std_id,date=http_date)
         except Student_Attendance.DoesNotExist:
             return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
         serializer = StudentAttendanceSerializer(http_stdid, many=True)
@@ -403,19 +415,58 @@ class ApiAttendance(APIView):
     def post(self, request, format=None):
         pstd_id = request.POST.get('st_id')
         p_date = request.POST.get('date')
-        User = get_user_model()
-        if User.objects.filter(sid=pstd_id).exists():
-            uid = User.objects.filter(sid=pstd_id)
-            http_date = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
-            print(http_date)
-            serializer = StudentAttendanceSerializer(http_date, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        http_status=request.POST.get('status')
+        if not http_status:
+            try:
+                http_stdid = Student_Attendance.objects.filter(st_id=pstd_id,date=p_date)
+            except Student_Attendance.DoesNotExist:
+                return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
+            serializer = StudentAttendanceSerializer(http_stdid, many=True)
+            return JsonResponse({"data":serializer.data})
         else:
-            return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
+            User = get_user_model()
+            if User.objects.filter(sid=pstd_id).exists():
+                uid = User.objects.filter(sid=pstd_id)
+                try:
+                    stu_a = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
+                except Student_Attendance.DoesNotExist:
+                    stu_a = None
+                if stu_a:
+                    serializer = StudentAttendanceSerializer(stu_a, data=request.data)
+                else:
+                    serializer = StudentAttendanceSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
+                    notif_s= request.POST.get('notif_s')
+                    message_title = "Student Attendance"
+                    registration_id=None
+                    if notif_s == "1":
+                        push_service = FCMNotification(api_key=FCM_SERVER_API)
+                        tokenq=Token.objects.get(uid=uid[0])
+                        stu_det=Student_Details.objects.get(st_id=uid[0])
+                        registration_id = tokenq.token
+                        if stu_a.in_time:
+                            message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
+                        elif stu_a.out_time:
+                            message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
+                    elif notif_s == "2":
+                        push_service = FCMNotification(api_key=FCM_SERVER_API)
+                        tokenq=Token.objects.get(uid=uid[0])
+                        stu_det=Student_Details.objects.get(st_id=uid[0])
+                        registration_id = tokenq.token
+                        ntime = strftime("%H:%M:%S", gmtime())
+                        if stu_a.status=="1":
+                            message_body = stu_det.first_name + " has been marked present at " + ntime + " by the authorities."
+                        elif stu_a.status=="0":
+                            message_body = stu_det.first_name + " has been marked absent at " + ntime + " by the authorities."
+                    if registration_id:
+                        result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body)
+                        print(result)
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return JsonResponse({"msg":"Student ID error"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ApiLogin(APIView):

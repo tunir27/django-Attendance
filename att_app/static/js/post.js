@@ -24,7 +24,6 @@ function submitForm(val){
 	frm.submit(function (ev) {
 			ev.preventDefault();
 			$.ajax({
-			//console.log("Motherfucker");
             type: frm.attr('method'),
             url: frm.attr('action'),
             data: frm.serialize() + "&data=" + val,		

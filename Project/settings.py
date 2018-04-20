@@ -132,8 +132,7 @@ EMAIL_HOST_USER = 'attendrteam@gmail.com'
 EMAIL_HOST_PASSWORD = 'Tunir_1234'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-
-
+FCM_SERVER_API="AAAA0XOnFJ0:APA91bFVoUiiwpaMU12Bc0nmhSuIM1gogbTeBTD4mJwKIC5PP7tILR41wQNIGhEKp1k6R5cowDhoNBerHKJd6kCruqYsmnlgUIzdNllgc2Z5ttrgtjdsDFU9_wpn0gZj2Vhgo3X9xbxS"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
