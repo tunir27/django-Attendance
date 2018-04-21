@@ -416,6 +416,8 @@ class ApiAttendance(APIView):
         pstd_id = request.POST.get('st_id')
         p_date = request.POST.get('date')
         http_status=request.POST.get('status')
+        print(request.POST)
+        print(http_status)
         if not http_status:
             try:
                 http_stdid = Student_Attendance.objects.filter(st_id=pstd_id,date=p_date)
