@@ -12,7 +12,7 @@ from .models import Student_Details, Student_Attendance, Token,Teacher_Details
 from .serializers import StudentDetailsSerializer, TokenSerializer, StudentAttendanceSerializer,TeacherDetailsSerializer
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from time import gmtime, strftime
+import datetime
 import requests
 from django.utils.html import escape
 from datetime import date
@@ -21,7 +21,8 @@ from .pdf_utils import PdfPrint
 from django.db.models import Q
 import itertools
 import functools
-
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
@@ -41,17 +42,23 @@ from pyfcm import FCMNotification
 
 @login_required(login_url='/login/')
 def successful_login(request):
-##    ntime = strftime("%H", gmtime())
-##    ndate=strftime("%d/%m/%y", gmtime())
-##    if int(ntime) > 8:
-##        d=Student_Attendance.objects.filter(date=ndate)
-##        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
-##        for data in f:
-##            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
-##            #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
-##            print(r.content)
-    # http_date=''
-    print(request.POST)
+    now = datetime.datetime.now()
+    ntime = now.strftime("%H")
+    ndate=now.strftime("%d/%m/%y")
+    if int(ntime) >= 0:
+        d=Student_Attendance.objects.filter(date=ndate)
+        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
+        for data in f:
+            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+            #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+            print(r.content)
+    if int(ntime)>=0:
+        d=Student_Attendance.objects.filter(date=ndate,status="1")
+        for data in d:
+            if not data.out_time:
+                r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+                #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+                print(r.content)
 
     form = VerifyForm(request.POST or None)
     http_data = request.POST.get('data')
@@ -62,15 +69,14 @@ def successful_login(request):
         http_sid = None
         http_status = None
         http_vdate = None
-    ##    http_sid=request.POST.get('id')
-    ##    http_status=request.POST.get('status')
-    ##    http_vdate = request.POST.get('date')
-    print(http_sid)
-    print(http_status)
-    print(http_vdate)
+##    print(http_sid)
+##    print(http_status)
+##    print(http_vdate)
     if http_sid and http_status and http_vdate:
         r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',
                           data={'st_id': http_sid, 'date': http_vdate, 'status': http_status,'notif_s':"2"})
+##        r = requests.post('http://127.0.0.1:8000/home/apia/',
+##                          data={'st_id': http_sid, 'date': http_vdate, 'status': http_status,'notif_s':"2"})
         print(r.content)
 
     form = FilterAttendance(request.POST or None)
@@ -91,29 +97,33 @@ def successful_login(request):
         date_item = Student_Attendance.objects.values('date').distinct()
         class_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('s_class')
         section_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('sec')
+        
+    if http_date and http_class and http_sec:
+        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
+        att_count_a = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="0").count()
+        att_count_p = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="1").count()
+
+
 
     if http_date and http_class and http_sec and staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
         stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
         stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
-        att_count = Student_Attendance.objects.filter(date=http_date,
-                                                      st_id__in=stu_det.values_list('st_id', flat=True)).count()
     elif http_date and http_class and http_sec and not staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
         stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec)
         stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
-        att_count = Student_Attendance.objects.filter(date=http_date,
-                                                      st_id__in=stu_det.values_list('st_id', flat=True)).count()
     else:
         stu_count = 0
         stu_att = ''
         stu_det = ''
-        att_count = 0
-
+        att_count_a = 0
+        att_count_p = 0
     return render(request, 'dashboard.html',
                   {"counter": functools.partial(next, itertools.count()), 'stu_count': stu_count, 'stu_att': stu_att,
                    'stu_det': stu_det, 'date_item': date_item, 'class_item': class_item, 'section_item': section_item,
-                   'att_count': att_count, 'staff_value': staff_value, })
+                   'att_count_a': att_count_a,'att_count_p':att_count_p, 'staff_value': staff_value, })
 
 
 def site_history(request):
@@ -166,6 +176,7 @@ class ContactUsView(FormView):
         template_name = "contact_form/contact_form.html"    #code for template is given below the view's code
         success_url = '/home/contact/'
         form_class = ContactUsForm
+        @method_decorator(csrf_exempt)
         def post(self, request, *args, **kwargs):
             '''
             A normal post request which takes input from field "name" and "subject" (in ContactUsForm). 
@@ -463,7 +474,8 @@ class ApiAttendance(APIView):
                         except:
                             registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
-                        ntime = strftime("%H:%M:%S", gmtime())
+                        now = datetime.datetime.now()
+                        ntime = now.strftime("%H:%M:%S")
                         if stu_a.status=="1":
                             message_body = stu_det.first_name + " has been marked present at " + ntime + " by the authorities."
                         elif stu_a.status=="0":
