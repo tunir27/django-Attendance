@@ -170,10 +170,14 @@ class ContactUsView(FormView):
             '''
             A normal post request which takes input from field "name" and "subject" (in ContactUsForm). 
             '''
-            form = self.form_class(request.POST)
-            if form.is_valid():
-                name= form.cleaned_data["name"]
-                subject=form.cleaned_data["subject"]
+            print(request.POST)
+            http_name=request.POST.get('name')
+            http_subject=request.POST.get('subject')
+            if http_name==None and http_subject==None:
+                form = self.form_class(request.POST)
+                if form.is_valid():
+                    name= form.cleaned_data["name"]
+                    subject=form.cleaned_data["subject"]
             user = get_user_model()
             http_stid = request.session['username']
             uid = user.objects.filter(sid=http_stid)
@@ -427,10 +431,7 @@ class ApiAttendance(APIView):
             if User.objects.filter(sid=pstd_id).exists():
                 uid = User.objects.filter(sid=pstd_id)
                 try:
-                    print(uid[0])
-                    print(p_date)
                     stu_a = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
-                    print(stu_a)
                 except Student_Attendance.DoesNotExist:
                     stu_a = None
                 if stu_a:
@@ -444,21 +445,25 @@ class ApiAttendance(APIView):
                     registration_id=None
                     if notif_s == "1":
                         push_service = FCMNotification(api_key=FCM_SERVER_API)
-                        tokenq=Token.objects.get(uid=uid[0])
+                        try:
+                            tokenq=Token.objects.get(uid=uid[0])
+                            registration_id = tokenq.token
+                        except:
+                            registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
-                        registration_id = tokenq.token
-                        print(stu_a)
                         if stu_a.status=="1":
                             message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
                         elif stu_a.status=="0":
                             message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
                     elif notif_s == "2":
                         push_service = FCMNotification(api_key=FCM_SERVER_API)
-                        tokenq=Token.objects.get(uid=uid[0])
+                        try:
+                            tokenq=Token.objects.get(uid=uid[0])
+                            registration_id = tokenq.token
+                        except:
+                            registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
-                        registration_id = tokenq.token
                         ntime = strftime("%H:%M:%S", gmtime())
-                        print(stu_a)
                         if stu_a.status=="1":
                             message_body = stu_det.first_name + " has been marked present at " + ntime + " by the authorities."
                         elif stu_a.status=="0":
