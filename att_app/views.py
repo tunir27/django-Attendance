@@ -45,18 +45,18 @@ def successful_login(request):
     now = datetime.datetime.now()
     ntime = now.strftime("%H")
     ndate=now.strftime("%d/%m/%y")
-    if int(ntime) >= 0:
+    if int(ntime) >= 7:
         d=Student_Attendance.objects.filter(date=ndate)
         f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
         for data in f:
-            r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+            r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
             #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
             print(r.content)
-    if int(ntime)>=0:
+    if int(ntime)>= 13:
         d=Student_Attendance.objects.filter(date=ndate,status="1")
         for data in d:
             if not data.out_time:
-                r=requests.post('https://attendanceproject.herokuapp.com/dashboard/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+                r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
                 #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 print(r.content)
 
