@@ -12,7 +12,7 @@ body {
     background: #000 url("https://marcosantadev.com/wp-content/uploads/black-abstract-wallpaper-mobile.jpg");
 	width: 100%;
 	 background-size: cover;
-    overflow: hidden;
+    overflow-y: auto;
     position:absolute;
     top:0;
     left:0;

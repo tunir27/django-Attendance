@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block body %}
 
-	<h1 style="text-align: center; color:white">Class Attendance</h1>
+	<h1 style="text-align: center; color:white; margin-top:100px; font-size:60px; font-family:Monotype Corsiva;">Class Attendance</h1>
 	
 	{% load filters %}
 	
-	<section id="FULL CONTAINER" ng-controller="ctrl_model">
-	<div class="container" style="padding-top:80px">
+	<section class="secone" id="FULL CONTAINER" ng-controller="ctrl_model">
+	<div class="container" style="padding-top:30px">
 		<section id="dashboard_card">
 			<div class="row pad-md">
 				<div class="col-md-4">
@@ -81,75 +81,86 @@
 </form>
 
 </div>		
-				
-		<div class="col-md-3" style="padding-left:150px">
+
+			<div class="col-md-3" style="padding-left:150px">
+			<h3 style="color:white"><u>STUDENT NAME</u></h3>
+			</div>
+			
+			<div class="col-md-3" style="padding-left:150px">
+			<h3 style="color:white"><u>IN TIME</u></h3>
+			</div>
+			
+			<div class="col-md-3" style="padding-left:80px">
+			<h3 style="color:white"><u>OUT TIME</u></h3>
+			</div>
+			<div class="col-md-3" style="padding-left:150px;visibility:hidden;">
+			<h3 style="color:white"><u>s</u></h3>
+			</div>
+
 			<div>
-				<h3 style="color:white"><u>STUDENT NAME</u></h3>
+		<div class="col-md-3" style="padding-left:150px">
 				<ul class="custom-bullet">
 				{% for j in stu_det %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
-						<li><h4 style="padding-top:5px">{{j.first_name}} {{j.last_name}}</h4></li>
+						<li><h4 style="padding-top:25px">{{j.first_name}} {{j.last_name}}</h4></li>
 					</a>
 					{% endfor %}
 				</ul>
-			</div>
 		</div>
 		<div class="col-md-3" style="padding-left:150px" >
-			<div>
-				<h3 style="color:white"><u>IN TIME</u></h3>
+			
 				<p id="datetimein"></p>
 		{% for i in stu_att %}
-				<p style="color:white; padding-top:5px">{{i.in_time}} {{i.date}}</p>
+				<p style="color:white; padding-top:25px">{{i.in_time}} {{i.date}}</p>
 				{% endfor %}
-			</div>
 			
 		</div>
 		<div class="col-md-3" style="padding-left:100px">
-			<div>
-				<h3 style="color:white"><u>OUT TIME</u></h3>
+			
 				<p id="datetimeout"></p>
 				{% for i in stu_att %}
-				<p style="color:white; padding-top:5px">{{i.out_time}}</p>
+				<p style="color:white; padding-top:25px">{{i.out_time}}</p>
 				{% endfor %}
-			</div>	
 		</div>
 		
+		<div style="padding-top:45px">
 			<form action="" id="v_form" method="POST">
 		    {% csrf_token %}
 			{% for i in stu_att %}
 				{% if i.status == "1" %}
 				{% if staff_value == True %}
-				<div class="col-md-3" style="padding-top:47px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:25px">
+					<button style="background-color: #46964d; color: #FFFFFF; outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value);" >PRESENT</button>
+					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value);" >ABSENT</button>
 					</div>
 					
 				{% else %}
-				<div class="col-md-3" style="padding-top:47px">
-					<button style="background-color: #46964d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button" name="status" value="1" disabled>PRESENT</button>
-					<button class="btn btn-default oval" type="submit" id="button"  name="status" value="0" disabled>ABSENT</button>
+				<div class="col-md-3" style="padding-top:25px">
+					<button style="background-color: #46964d; color: #FFFFFF; outline:none" class="btn btn-default oval" type="button" id="button" name="status" value="1">PRESENT</button>
+					<button style="outline:none" class="btn btn-default oval" type="button" id="button"  name="status" value="0">ABSENT</button>
 					</div>
 					
 					{% endif %}
 				{% else %}
 				
 				{% if staff_value == True %}
-				<div class="col-md-3" style="padding-top:2px">
-					<button class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+				<div class="col-md-3" style="padding-top:25px">
+					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value);" >PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF;outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value);" >ABSENT</button>
 					</div>
 					
 				{% else %}
-				<div class="col-md-3" style="padding-top:47px">
-					<button class="btn btn-default oval" type="button" id="button" name="status" value="1" disabled>PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF" class="btn btn-default oval" type="button" id="button"  name="status" value="0" disabled>ABSENT</button>
+				<div class="col-md-3" style="padding-top:25px">
+					<button style="outline:none" class="btn btn-default oval" type="button" id="button" name="status" value="1" >PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF;outline:none" class="btn btn-default oval" type="button" id="button"  name="status" value="0">ABSENT</button>
 					</div>
 					
 				{% endif %}
 				{% endif %} 
 				{% endfor %}
 				</form>
-
+				</div>
+				</div>
 <!-- <script>
 $(function () {
     $.ajaxSetup({

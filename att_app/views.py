@@ -403,12 +403,10 @@ class ApiTeachAttendance(APIView):
 
 class ApiAttendance(APIView):
     def get(self, request, std_id,format=None):
-        http_date=request.GET.get('date')
-        print(http_date)
         try:
-            http_stdid = Student_Attendance.objects.filter(st_id=std_id,date=http_date)
+            http_stdid = Student_Attendance.objects.filter(st_id=std_id)
         except Student_Attendance.DoesNotExist:
-            return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({"msg":"Student ID error"}, status=status.HTTP_404_NOT_FOUND)
         serializer = StudentAttendanceSerializer(http_stdid, many=True)
         return JsonResponse({"data":serializer.data})
 
@@ -421,6 +419,7 @@ class ApiAttendance(APIView):
         if not http_status:
             try:
                 http_stdid = Student_Attendance.objects.filter(st_id=pstd_id,date=p_date)
+                print(http_stdid)
             except Student_Attendance.DoesNotExist:
                 return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
             serializer = StudentAttendanceSerializer(http_stdid, many=True)
@@ -447,9 +446,9 @@ class ApiAttendance(APIView):
                         tokenq=Token.objects.get(uid=uid[0])
                         stu_det=Student_Details.objects.get(st_id=uid[0])
                         registration_id = tokenq.token
-                        if stu_a.in_time:
+                        if stu_a.status=="1":
                             message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
-                        elif stu_a.out_time:
+                        elif stu_a.status=="0":
                             message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
                     elif notif_s == "2":
                         push_service = FCMNotification(api_key=FCM_SERVER_API)
