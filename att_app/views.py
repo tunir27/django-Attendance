@@ -429,7 +429,10 @@ class ApiAttendance(APIView):
             if User.objects.filter(sid=pstd_id).exists():
                 uid = User.objects.filter(sid=pstd_id)
                 try:
+                    print(uid[0])
+                    print(p_date)
                     stu_a = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
+                    print(stu_a)
                 except Student_Attendance.DoesNotExist:
                     stu_a = None
                 if stu_a:
@@ -481,6 +484,7 @@ class ApiLogin(APIView):
             if user is None:
                 return JsonResponse({"msg":"Login error"}, status=status.HTTP_404_NOT_FOUND)
             else:
+                request.session['username']=user.sid
                 return JsonResponse({"msg":"Login successfull"}, status=status.HTTP_201_CREATED)
         try:
             http_token = Token.objects.get(uid=u_id)
@@ -497,6 +501,7 @@ class ApiLogin(APIView):
                     serializer = TokenSerializer(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
+                    request.session['username']=user.sid
                     cus_data=serializer.data
                     cus_data['staff_value']=user.is_staff
                     return Response(cus_data, status=status.HTTP_201_CREATED)
