@@ -415,11 +415,9 @@ class ApiAttendance(APIView):
         p_date = request.POST.get('date')
         http_status=request.POST.get('status')
         print(request.POST)
-        print(http_status)
         if not http_status:
             try:
                 http_stdid = Student_Attendance.objects.filter(st_id=pstd_id,date=p_date)
-                print(http_stdid)
             except Student_Attendance.DoesNotExist:
                 return Response("Student ID error", status=status.HTTP_404_NOT_FOUND)
             serializer = StudentAttendanceSerializer(http_stdid, many=True)
@@ -449,6 +447,7 @@ class ApiAttendance(APIView):
                         tokenq=Token.objects.get(uid=uid[0])
                         stu_det=Student_Details.objects.get(st_id=uid[0])
                         registration_id = tokenq.token
+                        print(stu_a)
                         if stu_a.status=="1":
                             message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
                         elif stu_a.status=="0":
@@ -459,12 +458,13 @@ class ApiAttendance(APIView):
                         stu_det=Student_Details.objects.get(st_id=uid[0])
                         registration_id = tokenq.token
                         ntime = strftime("%H:%M:%S", gmtime())
+                        print(stu_a)
                         if stu_a.status=="1":
                             message_body = stu_det.first_name + " has been marked present at " + ntime + " by the authorities."
                         elif stu_a.status=="0":
                             message_body = stu_det.first_name + " has been marked absent at " + ntime + " by the authorities."
                     if registration_id:
-                        result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body)
+                        result = push_service.notify_single_device(registration_id=registration_id, message_title=message_title, message_body=message_body,sound="Default")
                         print(result)
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 else:
