@@ -36,7 +36,6 @@ from django.views.generic import *
 from .forms import PasswordResetRequestForm,SetPasswordForm,ContactUsForm
 
 
-
 from pyfcm import FCMNotification
 
 
@@ -52,14 +51,18 @@ def successful_login(request):
             r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
             #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
             print(r.content)
-    if int(ntime)>= 13:
+    if int(ntime)>= 15:
         d=Student_Attendance.objects.filter(date=ndate,status="1")
         for data in d:
             if not data.out_time:
-                r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+                r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 print(r.content)
-
+            if not data.in_time:
+                r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+                #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+                print(r.content)
+                
     form = VerifyForm(request.POST or None)
     http_data = request.POST.get('data')
     print(http_data)
@@ -73,10 +76,16 @@ def successful_login(request):
 ##    print(http_status)
 ##    print(http_vdate)
     if http_sid and http_status and http_vdate:
-        r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',
-                          data={'st_id': http_sid, 'date': http_vdate, 'status': http_status,'notif_s':"2"})
-##        r = requests.post('http://127.0.0.1:8000/home/apia/',
-##                          data={'st_id': http_sid, 'date': http_vdate, 'status': http_status,'notif_s':"2"})
+        now = datetime.datetime.now()
+        ntime=now.strftime("%H:%M:%S")
+        if http_status=="1":
+            r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',
+                              data={'st_id': http_sid, 'date': http_vdate,'in_time':ntime, 'status': http_status,'notif_s':"2"})
+##            r = requests.post('http://127.0.0.1:8000/home/apia/',
+##                              data={'st_id': http_sid, 'date': http_vdate,'in_time':ntime, 'status': http_status,'notif_s':"2"})
+        if http_status=="0":
+            r = requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id': http_sid, 'date': http_vdate,'in_time':"", 'status': http_status,'notif_s':"2"})
+            #r = requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id': http_sid, 'date': http_vdate,'in_time':"", 'status': http_status,'notif_s':"2"})
         print(r.content)
 
     form = FilterAttendance(request.POST or None)
@@ -133,22 +142,32 @@ def site_history(request):
     staff_value=request.session['staff_value']
     return render(request,'history.html',{'class_item':class_item,'section_item':section_item,'staff_value':staff_value})
 
-
+@csrf_exempt
 def pdf_test(request):
+    http_stid=""
     print(request.POST)
     http_date=request.POST.get('date')
     http_class = request.POST.get('class_id')
     http_sec = request.POST.get('sec_id')
+    http_uid = request.POST.get('uid')
     print(http_class)
     print(http_sec)
     print(http_date)
+    if http_uid:
+        http_stid=http_uid
     if request.POST.get('stu_id'):
         http_stid=request.POST.get('stu_id')
     else:
-        http_stid = request.session['username']
+        try:
+            request.session['username']
+            if not http_stid:
+                http_stid=request.session['username']
+        except:
+            pass
     d,m,y=http_date.split("/")
     user = get_user_model()
-    uid = user.objects.filter(sid=http_stid)
+    if http_stid:
+        uid = user.objects.filter(sid=http_stid)
     if http_class and http_sec:
         details = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
         attendance = Student_Attendance.objects.filter(date__contains=('/'+m+'/'), st_id__in=details.values_list('st_id', flat=True))
@@ -159,6 +178,7 @@ def pdf_test(request):
         pie=1
     print(attendance)
     print(details)
+
     response = HttpResponse(content_type='application/pdf')
     today = date.today()
     filename = 'pdf_attendance' + today.strftime('%Y-%m-%d')
@@ -171,36 +191,54 @@ def pdf_test(request):
     return response
 
 
-
 class ContactUsView(FormView):
         template_name = "contact_form/contact_form.html"    #code for template is given below the view's code
         success_url = '/home/contact/'
         form_class = ContactUsForm
+        
         @method_decorator(csrf_exempt)
+        def dispatch(self, request, *args, **kwargs):
+            return super(ContactUsView, self).dispatch(request, *args, **kwargs)
         def post(self, request, *args, **kwargs):
             '''
             A normal post request which takes input from field "name" and "subject" (in ContactUsForm). 
             '''
             print(request.POST)
-            http_name=request.POST.get('name')
-            http_subject=request.POST.get('subject')
+            http_name=request.POST.get('c_name')
+            http_subject=request.POST.get('c_subject')
+            http_sid=request.POST.get('uid')
             if http_name==None and http_subject==None:
                 form = self.form_class(request.POST)
                 if form.is_valid():
                     name= form.cleaned_data["name"]
                     subject=form.cleaned_data["subject"]
+            else:
+                name=""
+                subject=""
             user = get_user_model()
-            http_stid = request.session['username']
+            if http_sid:
+                http_stid=http_sid
+            else:
+                http_stid = request.session['username']
             uid = user.objects.filter(sid=http_stid)
             stu_det=Student_Details.objects.filter(st_id=uid[0].sid)
             if stu_det[0].email:
-                c = {
-                    'email': 'attendrteam@gmail.com',
-                    'name': name,
-                    'content':subject,
-                    'user':uid[0],
-                    'u_mail':stu_det[0].email
-                    }
+                if name and subject:
+                    c = {
+                        'email': 'attendrteam@gmail.com',
+                        'name': name,
+                        'content':subject,
+                        'user':uid[0],
+                        'u_mail':stu_det[0].email
+                        }
+                else:
+                    c = {
+                        'email': 'attendrteam@gmail.com',
+                        'name': http_name,
+                        'content':http_subject,
+                        'user':uid[0],
+                        'u_mail':stu_det[0].email
+                        }
                 subject_template_name='contact_form/contact_form_subject.txt' 
                 # copied from django/contrib/admin/templates/registration/password_reset_subject.txt to templates directory
                 email_template_name='contact_form/contact_form_email.html'    
@@ -210,12 +248,15 @@ class ContactUsView(FormView):
                 subject = ''.join(subject.splitlines())
                 email = loader.render_to_string(email_template_name, c)
                 send_mail(subject, email, stu_det[0].email , ['attendrteam@gmail.com'], fail_silently=False)
-                result = self.form_valid(form)
-                messages.success(request, 'An email has been sent to the administration. We will get back to you soon.')
-                return result
-                result = self.form_invalid(form)
-                messages.error(request, 'No email id associated with this user')
-                return result
+                if http_name and http_subject:
+                    return JsonResponse({"msg":"An email has been sent to the administration. We will get back to you soon."}, status=status.HTTP_201_CREATED)
+                else:    
+                    result = self.form_valid(form)
+                    messages.success(request, 'An email has been sent to the administration. We will get back to you soon.')
+                    return result
+                    result = self.form_invalid(form)
+                    messages.error(request, 'No email id associated with this user')
+                    return result
 
 
 
@@ -443,10 +484,19 @@ class ApiAttendance(APIView):
                 uid = User.objects.filter(sid=pstd_id)
                 try:
                     stu_a = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
+                    if stu_a.in_time:
+                        new_data=request.data.copy()
+                        new_data['in_time']=stu_a.in_time
+                    else:
+                        new_data=""
                 except Student_Attendance.DoesNotExist:
                     stu_a = None
                 if stu_a:
-                    serializer = StudentAttendanceSerializer(stu_a, data=request.data)
+                    print("new_data",new_data)
+                    if new_data:
+                        serializer = StudentAttendanceSerializer(stu_a, data=new_data)
+                    else:
+                        serializer = StudentAttendanceSerializer(stu_a, data=request.data)
                 else:
                     serializer = StudentAttendanceSerializer(data=request.data)
                 if serializer.is_valid():
@@ -518,7 +568,6 @@ class ApiLogin(APIView):
                     serializer = TokenSerializer(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
-                    request.session['username']=user.sid
                     cus_data=serializer.data
                     cus_data['staff_value']=user.is_staff
                     return Response(cus_data, status=status.HTTP_201_CREATED)

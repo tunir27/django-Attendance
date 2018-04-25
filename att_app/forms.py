@@ -47,7 +47,7 @@ class SetPasswordForm(forms.Form):
 
 
 class ContactUsForm(forms.Form):
-    name = forms.CharField(label=("Name"), max_length=50)
+    name = forms.CharField(label=("Name"),widget=forms.TextInput(attrs={'style': 'color: black;'}), max_length=50)
     subject = forms.CharField(label=("Subject"), max_length=2000,widget=forms.Textarea(attrs={'style': 'color: black;'}),help_text='Write here your message!')
 
     def clean(self):
