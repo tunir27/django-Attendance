@@ -48,7 +48,7 @@ def successful_login(request):
         d=Student_Attendance.objects.filter(date=ndate)
         f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
         for data in f:
-            r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ntime,'status':'0'})
+            r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
             #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
             print(r.content)
     if int(ntime)>= 15:
@@ -484,7 +484,7 @@ class ApiAttendance(APIView):
                 uid = User.objects.filter(sid=pstd_id)
                 try:
                     stu_a = Student_Attendance.objects.get(st_id=uid[0], date=p_date)
-                    if stu_a.in_time:
+                    if stu_a.in_time and http_status=="1":
                         new_data=request.data.copy()
                         new_data['in_time']=stu_a.in_time
                     else:
