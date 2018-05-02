@@ -100,10 +100,16 @@
 			<div>
 		<div class="col-md-3" style="padding-left:150px">
 				<ul class="custom-bullet">
-				{% for j in stu_det %}
+				{% for i,j in combined %}
+				{% if not i.in_time or not i.out_time and not i.status == '1' %}
+					<a ng-click="fetch_details('{{j.st_id}}')">
+						<li><h4 style="padding-top:25px; color:red">{{j.first_name}} {{j.last_name}} </h4></li>
+					</a>
+					{% else %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
 						<li><h4 style="padding-top:25px">{{j.first_name}} {{j.last_name}}</h4></li>
 					</a>
+				{% endif %}
 					{% endfor %}
 				</ul>
 		</div>
@@ -161,61 +167,6 @@
 				</form>
 				</div>
 				</div>
-<!-- <script>
-$(function () {
-    $.ajaxSetup({
-        headers: { "X-CSRFToken": getCookie("csrftoken") }
-    });
-});
-function getCookie(c_name)
-{
-    if (document.cookie.length > 0)
-    {
-        c_start = document.cookie.indexOf(c_name + "=");
-        if (c_start != -1)
-        {
-            c_start = c_start + c_name.length + 1;
-            c_end = document.cookie.indexOf(";", c_start);
-            if (c_end == -1) c_end = document.cookie.length;
-            return unescape(document.cookie.substring(c_start,c_end));
-        }
-    }
-    return "";
-}	
-</script>
-
-<script>
-function submitForm(val){
-    var frm = $('#v_form');
-	frm.submit(function (ev) {
-			ev.preventDefault();
-			$.ajax({
-            type: frm.attr('method'),
-            url: frm.attr('action'),
-            data: frm.serialize() + "&data=" + val,		
-            success: function (data) {
-			$('#v_form').unbind('submit').submit;
-            }
-        });
-});
-}
-</script> -->
-<!-- <script>
-function submitForm1(val){
-    var frm = $('#c_form');
-	frm.submit(function (ev) {
-			ev.preventDefault();
-		$.ajax({
-            type: frm.attr('method'),
-            url: frm.attr('action'),
-            data: frm.serialize() + "&status=" + val,		
-            success: function (data) {
-			$('#c_form').unbind('submit').submit;
-            }
-        });
-});
-}
-</script> -->
 				
 				
 		
@@ -227,7 +178,7 @@ function submitForm1(val){
 		{
 		var b=parseInt(btn.slice(6))+1;
 		var nextbutton='button'+b;
-		console.log(nextbutton);
+		//console.log(nextbutton);
 		var property = document.getElementById(btn);
 		property.style.backgroundColor = "#46964d"
 		property.style.color = "#FFFFFF"
@@ -239,7 +190,7 @@ function submitForm1(val){
 		{
 		var b=parseInt(btn.slice(6))-1;
 		var nextbutton='button'+b;
-		console.log(nextbutton);
+		//console.log(nextbutton);
 		var property = document.getElementById(btn);
 		property.style.backgroundColor = "#ce161d"
 		property.style.color = "#FFFFFF"
@@ -247,41 +198,7 @@ function submitForm1(val){
 		property.style.backgroundColor = "#FFFFFF";
 		property.style.color = "#000000"
 		}
-        /*var property = document.getElementById(btn);
-        if (val == 0) 
-		{
-            if (s == 'P')
-			{
-			property.style.backgroundColor = "#ce161d"
-			property.style.color = "#FFFFFF"
-			property = document.getElementById('button1');
-			property.style.backgroundColor = "#FFFFFF"
-			}
-			else if (s == 'F' )
-			{
-			property.style.backgroundColor = "#ce161d"
-			property.style.color = "#FFFFFF"
-			property = document.getElementById('button3');
-			property.style.backgroundColor = "#FFFFFF"
-			}
-        }
-        else if(val == 1)
-		{
-            if (s == 'P')
-			{
-			property.style.backgroundColor = "#46964d"
-			property.style.color = "#FFFFFF"
-			property = document.getElementById('button2');
-			property.style.backgroundColor = "#FFFFFF"
-			}
-			else if (s == 'F' )
-			{
-			property.style.backgroundColor = "#46964d"
-			property.style.color = "#FFFFFF"
-			property = document.getElementById('button4');
-			property.style.backgroundColor = "#FFFFFF"
-			}
-        }*/
+        
     }
 </script>
 <ui-view></ui-view>

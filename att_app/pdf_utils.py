@@ -168,19 +168,29 @@ class PdfPrint:
             User = get_user_model()
             uid=User.objects.filter(sid=ah.st_id)
             d=Student_Details.objects.get(st_id=uid[0])
-            print(d)
             data.append(Spacer(1, 6))
             # add a row to table
-            table_data.append(
+            if not ah.in_time or not ah.out_time or int(ah.duration)<6:
+                table_data.append(
                 [
-                 Paragraph(str(d.first_name)+" "+str(d.last_name), styles['Justify']),
+                 Paragraph(str(d.first_name)+" "+str(d.last_name)+"*", styles['Justify']),
                  Paragraph(str(ah.date), styles['Justify']),
                  Paragraph(str(ah.in_time), styles['Justify']),
                  Paragraph(str(ah.out_time), styles['Justify']),
                  Paragraph(str(ah.duration), styles['Justify']),
                  Paragraph(str(ah.status), styles['Justify']),])
+                
+            else:
+                table_data.append(
+                    [
+                     Paragraph(str(d.first_name)+" "+str(d.last_name), styles['Justify']),
+                     Paragraph(str(ah.date), styles['Justify']),
+                     Paragraph(str(ah.in_time), styles['Justify']),
+                     Paragraph(str(ah.out_time), styles['Justify']),
+                     Paragraph(str(ah.duration), styles['Justify']),
+                     Paragraph(str(ah.status), styles['Justify']),])
         # create table
-        ah_table = Table(table_data, colWidths=[doc.width/6.0]*6)
+        ah_table = Table(table_data, colWidths=[doc.width/5.8]*8)
         ah_table.hAlign = 'LEFT'
         ah_table.setStyle(TableStyle(
             [('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
@@ -194,7 +204,8 @@ class PdfPrint:
             d,m,y=date.split("/")
             s_date,t_days=monthrange(int(y),int(m))
             today = strftime("%d/%m/%y", gmtime())
-            present_per=(attendance_history.filter(out_time__isnull=False).exclude(date=today).count()/t_days)*100
+            #present_per=(attendance_history.filter(out_time__isnull=False).exclude(date=today).count()/t_days)*100
+            present_per=(attendance_history.filter(status="1").exclude(date=today).count()/t_days)*100
             absent_per=100-present_per
             att_percentage=[present_per,absent_per]
             llabels = ['Present','Absent']
