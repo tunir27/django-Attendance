@@ -129,6 +129,8 @@ def successful_login(request):
         stu_det = ''
         att_count_a = 0
         att_count_p = 0
+
+        print(stu_att)
     return render(request, 'dashboard.html',
                   {"counter": functools.partial(next, itertools.count()), 'stu_count': stu_count, 'stu_att': stu_att,
                    'stu_det': stu_det, 'date_item': date_item, 'class_item': class_item, 'section_item': section_item,
