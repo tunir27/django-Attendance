@@ -108,8 +108,8 @@ def successful_login(request):
         section_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('sec')
         
     if http_date and http_class and http_sec:
-        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
+        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('-st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
         att_count_a = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="0").count()
         att_count_p = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="1").count()
 
@@ -117,12 +117,12 @@ def successful_login(request):
 
     if http_date and http_class and http_sec and staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
-        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
+        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('-st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
     elif http_date and http_class and http_sec and not staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
-        stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec)
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True))
+        stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec).order_by('-st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
     else:
         stu_count = 0
         stu_att = ''
@@ -130,7 +130,8 @@ def successful_login(request):
         att_count_a = 0
         att_count_p = 0
 
-        print(stu_att)
+    print("stu_att",stu_att)
+    print("stu_det",stu_det)
     return render(request, 'dashboard.html',
                   {"counter": functools.partial(next, itertools.count()), 'stu_count': stu_count, 'stu_att': stu_att,
                    'stu_det': stu_det, 'date_item': date_item, 'class_item': class_item, 'section_item': section_item,
