@@ -72,9 +72,6 @@ def successful_login(request):
         http_sid = None
         http_status = None
         http_vdate = None
-##    print(http_sid)
-##    print(http_status)
-##    print(http_vdate)
     if http_sid and http_status and http_vdate:
         now = datetime.datetime.now()
         ntime=now.strftime("%H:%M:%S")
@@ -108,8 +105,8 @@ def successful_login(request):
         section_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('sec')
         
     if http_date and http_class and http_sec:
-        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('-st_id')
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
+        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
         att_count_a = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="0").count()
         att_count_p = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True),status="1").count()
 
@@ -117,12 +114,12 @@ def successful_login(request):
 
     if http_date and http_class and http_sec and staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
-        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('-st_id')
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
+        stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
     elif http_date and http_class and http_sec and not staff_value:
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
-        stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec).order_by('-st_id')
-        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('-st_id')
+        stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec).order_by('st_id')
+        stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
     else:
         stu_count = 0
         stu_att = ''
@@ -130,8 +127,7 @@ def successful_login(request):
         att_count_a = 0
         att_count_p = 0
 
-    print("stu_att",stu_att)
-    print("stu_det",stu_det)
+
     return render(request, 'dashboard.html',
                   {"counter": functools.partial(next, itertools.count()), 'stu_count': stu_count, 'stu_att': stu_att,
                    'stu_det': stu_det, 'date_item': date_item, 'class_item': class_item, 'section_item': section_item,
@@ -156,14 +152,18 @@ def pdf_test(request):
     print(http_class)
     print(http_sec)
     print(http_date)
+    pdf_type=0
     if http_uid:
         http_stid=http_uid
+        pdf_type=1
     if request.POST.get('stu_id'):
         http_stid=request.POST.get('stu_id')
+        pdf_type=1
     else:
         try:
             request.session['username']
             if not http_stid:
+                pdf_type=1
                 http_stid=request.session['username']
         except:
             pass
@@ -172,24 +172,26 @@ def pdf_test(request):
     if http_stid:
         uid = user.objects.filter(sid=http_stid)
     if http_class and http_sec:
+        pdf_type=0
         details = Student_Details.objects.filter(s_class=http_class, sec=http_sec)
         attendance = Student_Attendance.objects.filter(date__contains=('/'+m+'/'), st_id__in=details.values_list('st_id', flat=True))
         pie=0
+        filename = 'pdf_attendance' +" "+ http_class + "-"+ http_sec + " " + m + "," + y
     else:
         attendance = Student_Attendance.objects.filter(st_id=uid[0],date__contains=('/'+m+'/'))
         details = Student_Details.objects.filter(st_id=uid[0])
         pie=1
+        for i in details:
+            filename = 'pdf_attendance ' +" "+ i.first_name +" "+ i.last_name +" " + m + "," + y
     print(attendance)
     print(details)
-
     response = HttpResponse(content_type='application/pdf')
     today = date.today()
-    filename = 'pdf_attendance' + today.strftime('%Y-%m-%d')
     response['Content-Disposition'] = \
         'attachement; filename={0}.pdf'.format(filename)
     buffer = BytesIO()
     report = PdfPrint(buffer, 'A4')
-    pdf = report.report(attendance, details,http_date,pie, 'Student Attendance data')
+    pdf = report.report(attendance, details,http_date,pie, 'Student Attendance data',pdf_type)
     response.write(pdf)
     return response
 

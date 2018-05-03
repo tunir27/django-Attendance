@@ -101,7 +101,6 @@
 		<div class="col-md-3" style="padding-left:150px">
 				<ul class="custom-bullet">
 				{% for i,j in combined %}
-				{{ i.st_id }}
 				{% if not i.in_time or not i.out_time and not i.status == '1' %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
 						<li><h4 style="padding-top:25px; color:red">{{j.first_name}} {{j.last_name}} </h4></li>
@@ -118,7 +117,6 @@
 			
 				<p id="datetimein"></p>
 		{% for i in stu_att %}
-		{{ i.st_id }}
 				<p style="color:white; padding-top:25px">{{i.in_time}} {{i.date}}</p>
 				{% endfor %}
 			
@@ -127,7 +125,6 @@
 			
 				<p id="datetimeout"></p>
 				{% for i in stu_att %}
-				{{ i.st_id }}
 				<p style="color:white; padding-top:25px">{{i.out_time}}</p>
 				{% endfor %}
 		</div>
@@ -136,7 +133,6 @@
 			<form action="" id="v_form" method="POST">
 		    {% csrf_token %}
 			{% for i in stu_att %}
-			{{ i.st_id }}
 				{% if i.status == "1" %}
 				{% if staff_value == True %}
 				<div class="col-md-3" style="padding-top:25px">

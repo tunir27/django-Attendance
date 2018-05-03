@@ -129,7 +129,7 @@ class PdfPrint:
         return d
         
 
-    def report(self, attendance_history,details,date,pie, title):
+    def report(self, attendance_history,details,date,pie, title,pdf_type):
         # set some characteristics for pdf document
         doc = SimpleDocTemplate(
             self.buffer,
@@ -150,55 +150,116 @@ class PdfPrint:
             fontName="FreeSansBold"))
         styles.add(ParagraphStyle(
             name="Justify", alignment=TA_JUSTIFY, fontName="FreeSans"))
+        styles.add(ParagraphStyle(
+            name="Note", fontSize=11,alignment=TA_JUSTIFY, fontName="FreeSansBold"))
         # list used for elements added into document
         data = []
         data.append(Paragraph(title, styles['Title']))
         # insert a blank space
         data.append(Spacer(1, 12))
         table_data = []
-        # table header
-        table_data.append([
-            Paragraph('Student Name', styles['TableHeader']),
-            Paragraph('Date', styles['TableHeader']),
-            Paragraph('IN Time', styles['TableHeader']),
-            Paragraph('Out Time', styles['TableHeader']),
-            Paragraph('Duration', styles['TableHeader']),
-            Paragraph('Status', styles['TableHeader'])])
-        for ah in attendance_history:
-            User = get_user_model()
-            uid=User.objects.filter(sid=ah.st_id)
-            d=Student_Details.objects.get(st_id=uid[0])
-            data.append(Spacer(1, 6))
-            # add a row to table
-            if not ah.in_time or not ah.out_time or int(ah.duration)<6:
-                table_data.append(
-                [
-                 Paragraph(str(d.first_name)+" "+str(d.last_name)+"*", styles['Justify']),
-                 Paragraph(str(ah.date), styles['Justify']),
-                 Paragraph(str(ah.in_time), styles['Justify']),
-                 Paragraph(str(ah.out_time), styles['Justify']),
-                 Paragraph(str(ah.duration), styles['Justify']),
-                 Paragraph(str(ah.status), styles['Justify']),])
-                
-            else:
-                table_data.append(
+        print("pdf_type",pdf_type)
+        if pdf_type==1:
+            table_data.append([
+                        Paragraph('Student Name', styles['TableHeader']),
+                        Paragraph('Date', styles['TableHeader']),
+                        Paragraph('IN Time', styles['TableHeader']),
+                        Paragraph('Out Time', styles['TableHeader']),
+                        Paragraph('Duration', styles['TableHeader']),
+                        Paragraph('Status', styles['TableHeader'])])
+            for ah in attendance_history:
+                User = get_user_model()
+                uid=User.objects.filter(sid=ah.st_id)
+                d=Student_Details.objects.get(st_id=uid[0])
+                data.append(Spacer(1, 6))
+                # add a row to table
+                try:
+                    h,m,s=ah.duration.split(":")
+                except:
+                    h=0
+                if not ah.in_time or not ah.out_time or int(h)<6:
+                    table_data.append(
                     [
-                     Paragraph(str(d.first_name)+" "+str(d.last_name), styles['Justify']),
+                     Paragraph(str(d.first_name)+" "+str(d.last_name)+"*", styles['Justify']),
                      Paragraph(str(ah.date), styles['Justify']),
                      Paragraph(str(ah.in_time), styles['Justify']),
                      Paragraph(str(ah.out_time), styles['Justify']),
                      Paragraph(str(ah.duration), styles['Justify']),
                      Paragraph(str(ah.status), styles['Justify']),])
-        # create table
-        ah_table = Table(table_data, colWidths=[doc.width/5.8]*8)
-        ah_table.hAlign = 'LEFT'
-        ah_table.setStyle(TableStyle(
-            [('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
-             ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
-             ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
-             ('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
-        data.append(ah_table)
-        data.append(Spacer(1, 48))
+                    
+                else:
+                    table_data.append(
+                        [
+                         Paragraph(str(d.first_name)+" "+str(d.last_name), styles['Justify']),
+                         Paragraph(str(ah.date), styles['Justify']),
+                         Paragraph(str(ah.in_time), styles['Justify']),
+                         Paragraph(str(ah.out_time), styles['Justify']),
+                         Paragraph(str(ah.duration), styles['Justify']),
+                         Paragraph(str(ah.status), styles['Justify']),])
+            # create table
+            ah_table = Table(table_data, colWidths=[doc.width/5.8]*8)
+            ah_table.hAlign = 'LEFT'
+            ah_table.setStyle(TableStyle(
+                [('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                 ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+                 ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+                 ('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
+            data.append(ah_table)
+            data.append(Spacer(1, 48))
+        else:
+            # table header
+            dates=attendance_history.values('date').distinct()
+            for i in range(len(dates)):
+                table_data.append([
+                    Paragraph('Student Name', styles['TableHeader']),
+                    Paragraph('Date', styles['TableHeader']),
+                    Paragraph('IN Time', styles['TableHeader']),
+                    Paragraph('Out Time', styles['TableHeader']),
+                    Paragraph('Duration', styles['TableHeader']),
+                    Paragraph('Status', styles['TableHeader'])])
+                # add a row to table
+                for ah in attendance_history:
+                    User = get_user_model()
+                    uid=User.objects.filter(sid=ah.st_id)
+                    d=Student_Details.objects.get(st_id=uid[0])
+                    data.append(Spacer(1, 6))
+                    if not ah.date==dates[i]['date']:
+                        continue
+                    else:
+                        try:
+                            h,m,s=ah.duration.split(":")
+                        except:
+                            h=0
+                        if not ah.in_time or not ah.out_time or int(h)<6:
+                            table_data.append(
+                            [
+                             Paragraph(str(d.first_name)+" "+str(d.last_name)+"*", styles['Justify']),
+                             Paragraph(str(ah.date), styles['Justify']),
+                             Paragraph(str(ah.in_time), styles['Justify']),
+                             Paragraph(str(ah.out_time), styles['Justify']),
+                             Paragraph(str(ah.duration), styles['Justify']),
+                             Paragraph(str(ah.status), styles['Justify']),])
+                            
+                        else:
+                            table_data.append(
+                                [
+                                 Paragraph(str(d.first_name)+" "+str(d.last_name), styles['Justify']),
+                                 Paragraph(str(ah.date), styles['Justify']),
+                                 Paragraph(str(ah.in_time), styles['Justify']),
+                                 Paragraph(str(ah.out_time), styles['Justify']),
+                                 Paragraph(str(ah.duration), styles['Justify']),
+                                 Paragraph(str(ah.status), styles['Justify']),])
+                # create table
+                ah_table = Table(table_data, colWidths=[doc.width/5.8]*8)
+                ah_table.hAlign = 'LEFT'
+                ah_table.setStyle(TableStyle(
+                    [('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                     ('BOX', (0, 0), (-1, -1), 0.5, colors.black),
+                     ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+                     ('BACKGROUND', (0, 0), (-1, 0), colors.gray)]))
+                data.append(ah_table)
+                data.append(Spacer(1, 48))
+                table_data=[]
         # add pie chart
         if pie:
             d,m,y=date.split("/")
@@ -212,6 +273,8 @@ class PdfPrint:
             pie_chart = self.pie_chart_draw(att_percentage, llabels)
             data.append(pie_chart)
         # create document
+        data.append(Paragraph("* denotes DEFAULTERS.",styles['Note']))
+        data.append(Paragraph("0 denotes ABSENT and 1 denotes PRESENT.",styles['Note']))
         doc.build(data, onFirstPage=self.pageNumber,
                   onLaterPages=self.pageNumber)
         pdf = self.buffer.getvalue()
