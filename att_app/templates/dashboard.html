@@ -101,7 +101,6 @@
 		<div class="col-md-3" style="padding-left:150px">
 				<ul class="custom-bullet">
 				{% for i,j in combined %}
-					{% else %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
 						<li><h4 style="padding-top:25px">{{j.first_name}} {{j.last_name}}</h4></li>
 					</a>
