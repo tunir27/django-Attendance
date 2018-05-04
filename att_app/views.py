@@ -234,6 +234,13 @@ class ContactUsView(FormView):
                 t_det=Teacher_Details.objects.filter(t_id=uid[0].sid)
             else:
                 stu_det=Student_Details.objects.filter(st_id=uid[0].sid)
+            c = {
+                'email': 'attendrteam@gmail.com',
+                'name': name,
+                'content':subject,
+                'user': 'Not Specified' ,
+                'u_mail':'Not Specified'
+                }
             if stu_det:
                 if stu_det[0].email:
                     if name and subject:
