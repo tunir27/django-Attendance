@@ -101,15 +101,9 @@
 		<div class="col-md-3" style="padding-left:150px">
 				<ul class="custom-bullet">
 				{% for i,j in combined %}
-				{% if not i.in_time or not i.out_time and not i.status == '1' %}
-					<a ng-click="fetch_details('{{j.st_id}}')">
-						<li><h4 style="padding-top:25px; color:red">{{j.first_name}} {{j.last_name}} </h4></li>
-					</a>
-					{% else %}
 					<a ng-click="fetch_details('{{j.st_id}}')">
 						<li><h4 style="padding-top:25px">{{j.first_name}} {{j.last_name}}</h4></li>
 					</a>
-				{% endif %}
 					{% endfor %}
 				</ul>
 		</div>

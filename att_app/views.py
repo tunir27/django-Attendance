@@ -42,26 +42,28 @@ from pyfcm import FCMNotification
 @login_required(login_url='/login/')
 def successful_login(request):
     now = datetime.datetime.now()
+    day=now.weekday()
     ntime = now.strftime("%H")
     ndate=now.strftime("%d/%m/%y")
-    if int(ntime) >= 7:
-        d=Student_Attendance.objects.filter(date=ndate)
-        f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
-        for data in f:
-            r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
-            #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
-            print(r.content)
-    if int(ntime)>= 15:
-        d=Student_Attendance.objects.filter(date=ndate,status="1")
-        for data in d:
-            if not data.out_time:
+    if not day==6:
+        if int(ntime) >= 7:
+            d=Student_Attendance.objects.filter(date=ndate)
+            f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
+            for data in f:
                 r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 print(r.content)
-            if not data.in_time:
-                r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
-                #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
-                print(r.content)
+        if int(ntime)>= 15:
+            d=Student_Attendance.objects.filter(date=ndate,status="1")
+            for data in d:
+                if not data.out_time:
+                    r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0','out_time':'--'})
+                    #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+                    print(r.content)
+                if not data.in_time:
+                    r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0','in_time':'--'})
+                    #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
+                    print(r.content)
                 
     form = VerifyForm(request.POST or None)
     http_data = request.POST.get('data')
@@ -226,48 +228,75 @@ class ContactUsView(FormView):
             else:
                 http_stid = request.session['username']
             uid = user.objects.filter(sid=http_stid)
-            stu_det=Student_Details.objects.filter(st_id=uid[0].sid)
-            if stu_det[0].email:
-                if name and subject:
-                    c = {
-                        'email': 'attendrteam@gmail.com',
-                        'name': name,
-                        'content':subject,
-                        'user':uid[0],
-                        'u_mail':stu_det[0].email
-                        }
-                else:
-                    c = {
-                        'email': 'attendrteam@gmail.com',
-                        'name': http_name,
-                        'content':http_subject,
-                        'user':uid[0],
-                        'u_mail':stu_det[0].email
-                        }
-                subject_template_name='contact_form/contact_form_subject.txt' 
-                # copied from django/contrib/admin/templates/registration/password_reset_subject.txt to templates directory
-                email_template_name='contact_form/contact_form_email.html'    
-                # copied from django/contrib/admin/templates/registration/password_reset_email.html to templates directory
-                subject = loader.render_to_string(subject_template_name, c)
-                # Email subject *must not* contain newlines
-                subject = ''.join(subject.splitlines())
-                email = loader.render_to_string(email_template_name, c)
+            stu_det=""
+            t_det=""
+            if uid[0].is_staff:
+                t_det=Teacher_Details.objects.filter(t_id=uid[0].sid)
+            else:
+                stu_det=Student_Details.objects.filter(st_id=uid[0].sid)
+            if stu_det:
+                if stu_det[0].email:
+                    if name and subject:
+                        c = {
+                            'email': 'attendrteam@gmail.com',
+                            'name': name,
+                            'content':subject,
+                            'user':uid[0],
+                            'u_mail':stu_det[0].email
+                            }
+                    else:
+                        c = {
+                            'email': 'attendrteam@gmail.com',
+                            'name': http_name,
+                            'content':http_subject,
+                            'user':uid[0],
+                            'u_mail':stu_det[0].email
+                            }
+            elif t_det:
+                if t_det[0].email:
+                    if name and subject:
+                        c = {
+                            'email': 'attendrteam@gmail.com',
+                            'name': name,
+                            'content':subject,
+                            'user':uid[0],
+                            'u_mail':t_det[0].email
+                            }
+                    else:
+                        c = {
+                            'email': 'attendrteam@gmail.com',
+                            'name': http_name,
+                            'content':http_subject,
+                            'user':uid[0],
+                            'u_mail':t_det[0].email
+                            }
+            subject_template_name='contact_form/contact_form_subject.txt' 
+            # copied from django/contrib/admin/templates/registration/password_reset_subject.txt to templates directory
+            email_template_name='contact_form/contact_form_email.html'    
+            # copied from django/contrib/admin/templates/registration/password_reset_email.html to templates directory
+            subject = loader.render_to_string(subject_template_name, c)
+            # Email subject *must not* contain newlines
+            subject = ''.join(subject.splitlines())
+            email = loader.render_to_string(email_template_name, c)
+            if stu_det:
                 send_mail(subject, email, stu_det[0].email , ['attendrteam@gmail.com'], fail_silently=False)
-                if http_name and http_subject:
-                    return JsonResponse({"msg":"An email has been sent to the administration. We will get back to you soon."}, status=status.HTTP_201_CREATED)
-                else:    
-                    result = self.form_valid(form)
-                    messages.success(request, 'An email has been sent to the administration. We will get back to you soon.')
-                    return result
-                    result = self.form_invalid(form)
-                    messages.error(request, 'No email id associated with this user')
-                    return result
+            elif t_det:
+                send_mail(subject, email, t_det[0].email , ['attendrteam@gmail.com'], fail_silently=False)
+            if http_name and http_subject:
+                return JsonResponse({"msg":"An email has been sent to the administration. We will get back to you soon."}, status=status.HTTP_201_CREATED)
+            else:    
+                result = self.form_valid(form)
+                messages.success(request, 'An email has been sent to the administration. We will get back to you soon.')
+                return result
+                result = self.form_invalid(form)
+                messages.error(request, 'No email id associated with this user')
+                return result
 
 
 
 
 class ResetPasswordRequestView(FormView):
-        template_name = "account/test_template.html"    #code for template is given below the view's code
+        template_name = "account/test_template.html"    
         success_url = '/login/'
         form_class = PasswordResetRequestForm
 
@@ -294,21 +323,42 @@ class ResetPasswordRequestView(FormView):
                 If the input is an valid email address, then the following code will lookup for users associated with that email address. If found then an email will be sent to the address, else an error message will be printed on the screen.
                 '''
                 User = get_user_model()
-                stu_det=Student_Details.objects.filter(email=data)
+                stu_det=""
+                t_det=""
+                try:
+                    stu_det=Student_Details.objects.filter(email=data)
+                    if not stu_det.exists():
+                        t_det=Teacher_Details.objects.filter(email=data)
+                except Student_Details.DoesNotExist:
+                    t_det=Teacher_Details.objects.filter(email=data)
+                print("t_det",t_det)
                 if stu_det:
                     associated_users=User.objects.filter(sid=stu_det[0])
+                elif t_det:
+                    associated_users=User.objects.filter(sid=t_det[0])
                 else:
                     associated_users=None
                 if associated_users:
-                    c = {
-                        'email': stu_det[0].email,
-                        'domain': request.META['HTTP_HOST'],
-                        'site_name': 'Attendr',
-                        'uid': urlsafe_base64_encode(force_bytes(associated_users[0].pk)).decode(),
-                        'user': associated_users[0],
-                        'token': default_token_generator.make_token(associated_users[0]),
-                        'protocol': 'http',
-                        }
+                    if stu_det.exists():
+                        c = {
+                            'email': stu_det[0].email,
+                            'domain': request.META['HTTP_HOST'],
+                            'site_name': 'Attendr',
+                            'uid': urlsafe_base64_encode(force_bytes(associated_users[0].pk)).decode(),
+                            'user': associated_users[0],
+                            'token': default_token_generator.make_token(associated_users[0]),
+                            'protocol': 'http',
+                            }
+                    elif t_det.exists():
+                        c = {
+                            'email': t_det[0].email,
+                            'domain': request.META['HTTP_HOST'],
+                            'site_name': 'Attendr',
+                            'uid': urlsafe_base64_encode(force_bytes(associated_users[0].pk)).decode(),
+                            'user': associated_users[0],
+                            'token': default_token_generator.make_token(associated_users[0]),
+                            'protocol': 'http',
+                            }                        
                     subject_template_name='registration/password_reset_subject.txt' 
                     # copied from django/contrib/admin/templates/registration/password_reset_subject.txt to templates directory
                     email_template_name='registration/password_reset_email.html'    
@@ -317,7 +367,10 @@ class ResetPasswordRequestView(FormView):
                     # Email subject *must not* contain newlines
                     subject = ''.join(subject.splitlines())
                     email = loader.render_to_string(email_template_name, c)
-                    send_mail(subject, email, DEFAULT_FROM_EMAIL , [stu_det[0].email], fail_silently=False)
+                    if stu_det:
+                        send_mail(subject, email, DEFAULT_FROM_EMAIL , [stu_det[0].email], fail_silently=False)
+                    elif t_det:
+                        send_mail(subject, email, DEFAULT_FROM_EMAIL , [t_det[0].email], fail_silently=False)
                     result = self.form_valid(form)
                     messages.success(request, 'An email has been sent to ' + data +". Please check its inbox to continue reseting password.")
                     return result
@@ -330,28 +383,62 @@ class ResetPasswordRequestView(FormView):
                 '''
                 User = get_user_model()
                 associated_users= User.objects.filter(sid=data)
+                    
                 if associated_users:
-                    stu_det=Student_Details.objects.filter(st_id=associated_users[0].sid)
-                if associated_users:
-                    c = {
-                        'email': stu_det[0].email,
-                        'domain': request.META['HTTP_HOST'], #or your domain
-                        'site_name': 'Attendr',
-                        'uid': urlsafe_base64_encode(force_bytes(associated_users[0].sid)).decode(),
-                        'user': associated_users[0],
-                        'token': default_token_generator.make_token(associated_users[0]),
-                        'protocol': 'http',
-                        }
-                    subject_template_name='registration/password_reset_subject.txt'
-                    email_template_name='registration/password_reset_email.html'
-                    subject = loader.render_to_string(subject_template_name, c)
-                    # Email subject *must not* contain newlines
-                    subject = ''.join(subject.splitlines())
-                    email = loader.render_to_string(email_template_name, c)
-                    send_mail(subject, email, DEFAULT_FROM_EMAIL , [stu_det[0].email], fail_silently=False)
-                    result = self.form_valid(form)
-                    messages.success(request, 'Email has been sent to ' + data +"'s email address. Please check its inbox to continue reseting password.")
-                    return result
+                    if not associated_users[0].is_staff:
+                        stu_det=Student_Details.objects.filter(st_id=associated_users[0].sid)
+                        t_det=''
+                    else:
+                        t_det=Teacher_Details.objects.filter(t_id=associated_users[0].sid)
+                        stu_det=''
+                    if stu_det:
+                        if not stu_det[0].email:
+                            result = self.form_invalid(form)
+                            messages.error(request, 'This username does does not have an email id.Please contact administrator.')
+                            return result
+                        c = {
+                            'email': stu_det[0].email,
+                            'domain': request.META['HTTP_HOST'], #or your domain
+                            'site_name': 'Attendr',
+                            'uid': urlsafe_base64_encode(force_bytes(associated_users[0].sid)).decode(),
+                            'user': associated_users[0],
+                            'token': default_token_generator.make_token(associated_users[0]),
+                            'protocol': 'http',
+                            }
+                        subject_template_name='registration/password_reset_subject.txt'
+                        email_template_name='registration/password_reset_email.html'
+                        subject = loader.render_to_string(subject_template_name, c)
+                        # Email subject *must not* contain newlines
+                        subject = ''.join(subject.splitlines())
+                        email = loader.render_to_string(email_template_name, c)
+                        send_mail(subject, email, DEFAULT_FROM_EMAIL , [stu_det[0].email], fail_silently=False)
+                        result = self.form_valid(form)
+                        messages.success(request, 'Email has been sent to ' + data +"'s email address. Please check its inbox to continue reseting password.")
+                        return result
+                    elif t_det:
+                        if not t_det[0].email:
+                            result = self.form_invalid(form)
+                            messages.error(request, 'This username does does not have an email id.Please contact administrator.')
+                            return result
+                        c = {
+                            'email': t_det[0].email,
+                            'domain': request.META['HTTP_HOST'], #or your domain
+                            'site_name': 'Attendr',
+                            'uid': urlsafe_base64_encode(force_bytes(associated_users[0].sid)).decode(),
+                            'user': associated_users[0],
+                            'token': default_token_generator.make_token(associated_users[0]),
+                            'protocol': 'http',
+                            }
+                        subject_template_name='registration/password_reset_subject.txt'
+                        email_template_name='registration/password_reset_email.html'
+                        subject = loader.render_to_string(subject_template_name, c)
+                        # Email subject *must not* contain newlines
+                        subject = ''.join(subject.splitlines())
+                        email = loader.render_to_string(email_template_name, c)
+                        send_mail(subject, email, DEFAULT_FROM_EMAIL , [t_det[0].email], fail_silently=False)
+                        result = self.form_valid(form)
+                        messages.success(request, 'Email has been sent to ' + data +"'s email address. Please check its inbox to continue reseting password.")
+                        return result
                 result = self.form_invalid(form)
                 messages.error(request, 'This username does not exist in the system.')
                 return result

@@ -23,6 +23,8 @@ class Teacher_Details(models.Model):
     dob=models.DateField(max_length=8,help_text="Enter Date of Birth",verbose_name="Date of Birth",null=True)
     address=models.CharField(max_length=50, help_text="Enter the Address",verbose_name="Address",null=True)
     phone=models.CharField(max_length=15, help_text="Enter Phone Number",verbose_name="Phone No",null=True)
+    gender=models.CharField(max_length=1, help_text="Enter Teacher Gender(M/F/T)",verbose_name="Teacher Gender",null=True,blank=True)
+    email = models.EmailField(max_length=70,help_text="Enter Email",verbose_name="Email",blank=True,null=True,unique=True)
     def __str__(self):
         return str(self.t_id)
 class Student_Attendance(models.Model):
