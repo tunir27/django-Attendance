@@ -106,6 +106,7 @@ def successful_login(request):
         class_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('s_class')
         section_item = Student_Details.objects.filter(st_id=user.objects.get(sid=http_uid)).values('sec')
         
+
     if http_date and http_class and http_sec:
         stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('st_id')
         stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
@@ -118,16 +119,26 @@ def successful_login(request):
         stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
         stu_det = Student_Details.objects.filter(s_class=http_class, sec=http_sec).order_by('st_id')
         stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
-    elif http_date and http_class and http_sec and not staff_value:
-        stu_count = Student_Details.objects.filter(s_class=http_class, sec=http_sec).count()
-        stu_det = Student_Details.objects.filter(st_id=uid, s_class=http_class, sec=http_sec).order_by('st_id')
+    elif http_date and not http_class and not http_sec and not staff_value:
+        stu_det=Student_Details.objects.filter(st_id=uid.sid).order_by('st_id')
+        stu_det_all=Student_Details.objects.filter(s_class=stu_det[0].s_class, sec=stu_det[0].sec).order_by('st_id')
+        stu_count = Student_Details.objects.filter(s_class=stu_det[0].s_class, sec=stu_det[0].sec).count()
         stu_att = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det.values_list('st_id', flat=True)).order_by('st_id')
+        att_count_a = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det_all.values_list('st_id', flat=True),status="0").count()
+        att_count_p = Student_Attendance.objects.filter(date=http_date, st_id__in=stu_det_all.values_list('st_id', flat=True),status="1").count()
+
+
     else:
         stu_count = 0
         stu_att = ''
         stu_det = ''
         att_count_a = 0
         att_count_p = 0
+
+
+    
+        
+
 
 
     return render(request, 'dashboard.html',

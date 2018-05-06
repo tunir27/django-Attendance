@@ -52,8 +52,9 @@
 		</section>
 		
 
-    <form style="padding-left:250px" name="DateForm" method="POST" action="">
+     <form style="padding-left:250px" name="DateForm" method="POST" action="">
 	{% csrf_token %}
+	{% if staff_value == True %}
     <div class="col-md-4" style="width:200px">
 	<select class="form-control" name="date_id">
 	<option value="" SELECTED>Choose Date
@@ -78,6 +79,16 @@
 	{% endfor %}
 	</select>
 	</div>
+	{% else %}
+	<div class="col-md-4" style="width:200px; margin-left:200px" >
+	<select class="form-control" name="date_id" onChange="DateForm.submit();">
+	<option value="" SELECTED>Choose Date
+	{% for entry in date_item %}
+    <option value="{{ entry.date }}">{{ entry.date }}</option>
+	{% endfor %}
+	</select>
+	</div>
+	{% endif %}
 </form>
 
 </div>		
