@@ -624,7 +624,7 @@ class ApiAttendance(APIView):
                         stu_det=Student_Details.objects.get(st_id=uid[0])
                         now = datetime.datetime.now()
                         ntime = now.strftime("%H")
-                        if stu_a.status=="1" and not ntime>=13:
+                        if stu_a.status=="1" and not int(ntime)>=13:
                             message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
                         elif stu_a.status=="0":
                             message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
