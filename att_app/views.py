@@ -604,9 +604,9 @@ class ApiAttendance(APIView):
                 if stu_a:
                     print("new_data",new_data)
                     if new_data:
-                        serializer = StudentAttendanceSerializer(stu_a, data=new_data)
+                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=new_data)
                     else:
-                        serializer = StudentAttendanceSerializer(stu_a, data=request.data)
+                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=request.data)
                 else:
                     serializer = StudentAttendanceSerializer(data=request.data)
                 if serializer.is_valid():
@@ -622,9 +622,13 @@ class ApiAttendance(APIView):
                         except:
                             registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
-                        if stu_a.status=="1":
+                        now = datetime.datetime.now()
+                        ntime = now.strftime("%H")
+                        if stu_a.status=="1" and not ntime>=13:
                             message_body = stu_det.first_name + " has entered the school at " + stu_a.in_time
                         elif stu_a.status=="0":
+                            message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
+                        else:
                             message_body = stu_det.first_name + " has left the school at " + stu_a.out_time
                     elif notif_s == "2":
                         push_service = FCMNotification(api_key=FCM_SERVER_API)
