@@ -48,13 +48,13 @@ def successful_login(request):
     if not day==6:
         if int(ntime) >= 7:
             d=Student_Attendance.objects.filter(date=ndate)
-            f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True)))
+            f=Student_Details.objects.filter(~Q(st_id__in=d.values_list('st_id',flat=True))).order_by('st_id')
             for data in f:
                 r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 #r=requests.post('http://127.0.0.1:8000/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0'})
                 print(r.content)
         if int(ntime)>= 15:
-            d=Student_Attendance.objects.filter(date=ndate,status="1")
+            d=Student_Attendance.objects.filter(date=ndate,status="1").order_by('st_id')
             for data in d:
                 if not data.out_time:
                     r=requests.post('https://attendanceproject.herokuapp.com/home/apia/',data={'st_id':data.st_id,'date':ndate,'status':'0','out_time':'--'})
@@ -559,8 +559,8 @@ class ApiTeachAttendance(APIView):
                 stu_att = Student_Attendance.objects.filter(date=h_date, st_id__in=stu_det.values_list('st_id', flat=True))
             except Student_Attendance.DoesNotExist:
                 return JsonResponse({"msg":"Value error"}, status=status.HTTP_404_NOT_FOUND)
-            serializer = StudentAttendanceSerializer(stu_att, many=True)
-            serializer_name=StudentDetailsSerializer(stu_det, many=True)
+            serializer = StudentAttendanceSerializer(stu_att.order_by('st_id'), many=True)
+            serializer_name=StudentDetailsSerializer(stu_det.order_by('st_id'), many=True)
             return JsonResponse({"data":serializer.data,"name":serializer_name.data})
 
 
@@ -604,9 +604,9 @@ class ApiAttendance(APIView):
                 if stu_a:
                     print("new_data",new_data)
                     if new_data:
-                        serializer = StudentAttendanceSerializer(stu_a, data=new_data)
+                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=new_data)
                     else:
-                        serializer = StudentAttendanceSerializer(stu_a, data=request.data)
+                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=request.data)
                 else:
                     serializer = StudentAttendanceSerializer(data=request.data)
                 if serializer.is_valid():
