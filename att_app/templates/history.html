@@ -35,19 +35,19 @@ $(function() {
     }); 
 </script>
 {% if staff_value == True %}
-<div class="col-md-7" style="padding-left:450px;padding-top:200px">
+<div class="col-md-7" style="padding-left:300px;padding-top:200px">
 <div>
-	<label style="color:white"for="chkStudent">
-    <input type="checkbox" id="chkStudent" data-related-item="ch" />Select Single Student</label>
+	<label style="color:white; font-size:30px"for="chkStudent">
+    <input type="checkbox" style="width: 22px; height: 22px;" id="chkStudent" data-related-item="ch" />Select Single Student</label>
 	</div>
 	<div id="dvStudent" style="display: none">
-    <label id="ch" style="color:white">Enter Student ID:</label>
+    <label id="ch" style="color:white;font-size:20px">Enter Student ID:</label>
 	<form name="TeachHistoryS" method="POST" action="/home/pdf/">
 		{% csrf_token %}
     <input type="text" id="studentid" name="stu_id" required>
 	<div style="padding-right:250px">
     		<div class="form-group">
-    			<label style="color:white">Select Date</label>
+    			<label style="color:white;font-size:20px">Select Date</label>
     		    <input type="text" id="datepicker1" name="date" class="form-control" placeholder="Choose" required>
     		</div>
 		</div>
@@ -82,8 +82,8 @@ $(function() {
 </script> -->
 <div class="col-md-4" style="padding-top:200px">
 <div>
-	<label style="color:white"for="chkClass">
-    <input type="checkbox" id="chkClass" data-related-item="ch1"/>Select Class Wise</label>
+	<label style="color:white;font-size:30px"for="chkClass">
+    <input type="checkbox" id="chkClass" style="width: 22px; height: 22px;" data-related-item="ch1"/>Select Class Wise</label>
 	</div>
 	<div id="dvClass" style="display: none">
 	

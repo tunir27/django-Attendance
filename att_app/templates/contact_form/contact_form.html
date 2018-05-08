@@ -47,7 +47,7 @@
 		{% block messages %}
         {% if messages %}
         <ul class="messagelist" style="color:white">{% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+          <h3{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</h3>
         {% endfor %}</ul>
         {% endif %}
     {% endblock messages %}

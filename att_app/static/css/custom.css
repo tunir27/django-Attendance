@@ -6,6 +6,7 @@ body, html {
 	width: 100%;
 	font-family: 'Raleway',sans-serif;
 	background-repeat: no-repeat;
+	overflow-x:hidden;
 	background:black;
 	position: relative;
 }
@@ -144,6 +145,7 @@ a:hover, a:focus {
 body{
 	width:100%;
 	height:100%;
+	overflow-x:hidden;
 	font-family: 'Roboto Condensed', sans-serif;
 	
 }
