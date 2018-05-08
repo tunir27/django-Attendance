@@ -604,9 +604,9 @@ class ApiAttendance(APIView):
                 if stu_a:
                     print("new_data",new_data)
                     if new_data:
-                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=new_data)
+                        serializer = StudentAttendanceSerializer(stu_a, data=new_data)
                     else:
-                        serializer = StudentAttendanceSerializer(stu_a.order_by('st_id'), data=request.data)
+                        serializer = StudentAttendanceSerializer(stu_a, data=request.data)
                 else:
                     serializer = StudentAttendanceSerializer(data=request.data)
                 if serializer.is_valid():
