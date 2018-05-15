@@ -141,8 +141,8 @@
 				{% if i.status == "1" %}
 				{% if staff_value == True %}
 				<div class="col-md-3" style="padding-top:25px">
-					<button style="background-color: #46964d; color: #FFFFFF; outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+					<button style="background-color: #46964d; color: #FFFFFF; outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'P', value); showToast(); disableButton();" >PRESENT</button>
+					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="this.blur(); submitForm(value); setColor(id,'A', value); showToast(); disableButton();" >ABSENT</button>
 					</div>
 					
 				{% else %}
@@ -156,8 +156,8 @@
 				
 				{% if staff_value == True %}
 				<div class="col-md-3" style="padding-top:25px">
-					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value);" >PRESENT</button>
-					<button style="background-color: #ce161d; color: #FFFFFF;outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value);" >ABSENT</button>
+					<button style="outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}" name="data" value="1,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'P', value); showToast();" >PRESENT</button>
+					<button style="background-color: #ce161d; color: #FFFFFF;outline:none" class="btn btn-default oval" type="submit" id="button{{counter}}"  name="data" value="0,{{i.st_id}},{{i.date}}"  onClick="submitForm(value); setColor(id,'A', value); showToast();" >ABSENT</button>
 					</div>
 					
 				{% else %}
@@ -172,6 +172,21 @@
 				</form>
 				</div>
 				</div>
+				
+				<div id="snackbar">Please Wait..</div>
+				
+				
+				<script>
+				function showToast() 
+				{
+					var x = document.getElementById("snackbar");
+					x.className = "show";
+				    setTimeout(function()
+					{ x.className = x.className.replace("show", "");
+					}, 3000);
+			
+				}
+				
 				
 				
 		

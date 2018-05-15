@@ -622,6 +622,7 @@ class ApiAttendance(APIView):
                         except:
                             registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
+                        stu_a=Student_Attendance.objects.get(st_id=uid[0])
                         now = datetime.datetime.now()
                         ntime = now.strftime("%H")
                         if stu_a.status=="1" and not int(ntime)>=13:
@@ -638,6 +639,7 @@ class ApiAttendance(APIView):
                         except:
                             registration_id=None
                         stu_det=Student_Details.objects.get(st_id=uid[0])
+                        stu_a=Student_Attendance.objects.get(st_id=uid[0])
                         now = datetime.datetime.now()
                         ntime = now.strftime("%H:%M:%S")
                         if stu_a.status=="1":
