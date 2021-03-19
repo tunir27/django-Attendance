@@ -7,7 +7,7 @@ django-angular==2.0.0
 django-cors-headers==2.1.0
 django-crispy-forms==1.7.0
 django-widget-tweaks==1.4.1
-djangorestframework==3.7.7
+djangorestframework==3.11.2
 flake8==3.5.0
 gunicorn==19.7.1
 idna==2.6
